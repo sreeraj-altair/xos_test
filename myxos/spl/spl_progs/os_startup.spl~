@@ -27,7 +27,7 @@ SP = 3 * 512;
 
 load (9, 3);		//Load Interrupt 1
 
-load (8, 2);		//Load Timer Interrupt
+load (8, 2)		//Load Timer Interrupt
 
 ireturn;
 
