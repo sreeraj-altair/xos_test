@@ -4,15 +4,16 @@ enddecl
 
 integer main()
 {
-	print("Enter n");
+	print("Enter n:");
 	read(n);
 	i = 2;
-	while (i<n) do
+	while (i <= n) do
 		j = 2;
 		flag=0;
-		while (j < i) do
+		while (j <= (i/2)) do
 			if (i%j == 0) then
 				flag = 1;
+				break;
 			endif;
 			j = j+1;
 		endwhile;
