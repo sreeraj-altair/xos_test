@@ -1,0 +1,67 @@
+define PCBList_start 1536;
+define PCBList_end 2559;
+alias currentPID R8;
+currentPID = (PTBR - 1024) / 8;
+
+alias currentPCB R9;
+currentPCB = READY_LIST + 32 * currentPID;
+
+[ currentPCB + 2 ] = BP;
+[ currentPCB + 3 ] = SP-1;	
+
+alias physicalSP R10;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+[ currentPCB + 4 ] = [ physicalSP - 1 ] ;
+[ currentPCB + 5 ] = PTBR;
+[ currentPCB + 6 ] = PTLR;
+[ currentPCB + 7 ] = R0;
+[ currentPCB + 8 ] = R1;
+[ currentPCB + 9 ] = R2;
+[ currentPCB + 10 ] = R3;
+[ currentPCB + 11 ] = R4;
+[ currentPCB + 12 ] = R5;
+[ currentPCB + 13 ] = R6;	
+[ currentPCB + 14 ] = R7;	
+
+breakpoint;
+alias newPCB R11;
+alias temp R12;
+
+
+newPCB = 0;
+temp = currentPCB;
+
+while (1) do
+	if ([temp + 1] == 1) then
+		break;
+	endif;
+	temp = temp + 32;
+	if (temp > PCBList_end) then
+		temp = PCBList_start;
+	endif;
+endwhile;
+
+newPCB = temp;
+
+BP = [ newPCB + 2];
+SP = [ newPCB + 3];
+PTBR = [ newPCB + 5];
+PTLR = [ newPCB + 6];
+R0 = [ newPCB + 7];
+R1 = [ newPCB + 8];
+R2 = [ newPCB + 9];
+R3 = [ newPCB + 10];
+R4 = [ newPCB + 11];
+R5 = [ newPCB + 12];
+R6 = [ newPCB + 13];
+R7 = [ newPCB + 14];
+		
+[ physicalSP ] = [ newPCB + 4 ]; // Stores IP field value of PCB on the stack 
+SP = SP + 1;
+
+[ currentPCB + 1 ] = 1;
+[ newPCB + 1 ] = 2;
+
+ireturn;
+	

@@ -27,7 +27,36 @@ SP = 3 * 512;
 
 load (9, 3);		//Load Interrupt 1
 
+
+
+
+[READY_LIST + 32] = 1; // Sets the entry for PID as 1
+
+load (20,19);
+load (21,20);
+load (22,21);
+
+alias PTBR_Process1 R8;
+PTBR_Process1 = 1024 + 1 * 8;
+
+[PTBR_Process1 + 0] = 20; // 1st Word of Page Table Entry 1 - Page Number
+[PTBR_Process1 + 1] = 11; // 2nd Word of Page Table Entry 1 - Auxiliary Information
+[PTBR_Process1 + 2] = 21; // 1st Word of Page Table Entry 2 - Page Number
+[PTBR_Process1 + 3] = 11; // 2nd Word of Page Table Entry 2 - Auxiliary Information
+[PTBR_Process1 + 4] = 22; // 1st Word of Page Table Entry 3 - Page Number
+[PTBR_Process1 + 5] = 11; // 2nd Word of Page Table Entry 3 - Auxiliary Information
+[PTBR_Process1 + 6] = 23; // 1st Word of Page Table Entry 4 - Page Number of stack 
+[PTBR_Process1 + 7] = 11; // 2nd Word of Page Table Entry 4 - Auxiliary Information
+
+[READY_LIST + 33] = 1;	 		// Sets the entry for STATE as 1 (Ready)
+[READY_LIST + 37] = PTBR_Process1;	// PTBR 
+[READY_LIST + 38] = 4;	 		// PTLR
+[READY_LIST + 34] = 3 * 512; 	// BP 
+[READY_LIST + 35] = 3 * 512;	// SP
+[READY_LIST + 36] = 0;		//IP
+
 load (8, 2);		//Load Timer Interrupt
+
 
 ireturn;
 
