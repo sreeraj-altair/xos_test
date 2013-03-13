@@ -1,0 +1,5 @@
+START
+MOV T0,  "SW Interrupt"
+OUT T0
+IRET
+HALT
