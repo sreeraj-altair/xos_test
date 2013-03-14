@@ -1,0 +1,55 @@
+load (7,1);		//Load Exception Handler
+load (15,9);		//load Interrupt 7
+
+[READY_LIST + 0] = 0;		// Sets the entry for PID as 0
+
+load (16,13);		//Load pages for INIT
+load (17,14);
+load (18,15);
+
+PTBR = 1024;
+PTLR = 4;
+
+[PTBR + 0] = 16; 		// 1st Word of Page Table Entry 1 - Page Number
+[PTBR + 1] = 11; 		// 2nd Word of Page Table Entry 1 - Auxiliary Information
+[PTBR + 2] = 17; 		// 1st Word of Page Table Entry 2 - Page Number
+[PTBR + 3] = 11;		// 2nd Word of Page Table Entry 2 - Auxiliary Information
+[PTBR + 4] = 18; 		// 1st Word of Page Table Entry 3 - Page Number
+[PTBR + 5] = 11;		// 2nd Word of Page Table Entry 3 - Auxiliary Information
+[PTBR + 6] = 19; 		// 1st Word of Page Table Entry 4 - Page Number of stack 
+[PTBR + 7] = 11; 		// 2nd Word of Page Table Entry 4 - Auxiliary Information
+
+[READY_LIST + 1] = 2;	 	// Sets the entry for STATE as 2 (Running)
+
+SP = 3 * 512;
+
+[19 * 512] = 0;
+
+load (9, 3);		//Load Interrupt 1
+
+load (8, 2);		//Load Timer Interrupt
+
+
+load (5,10);		//FAT
+
+alias counter R8;	// R8 - R15 is used by system programmers.
+counter = 0;
+while ( counter <=  128) do
+	[ FILE_TABLE + counter] = -1;
+	counter = counter + 1;
+endwhile;
+
+alias j R9;
+counter = READY_LIST;
+while ( counter <= (READY_LIST + 1024) ) do
+	j = 15;
+	while (j <= 30) do
+		[ counter + j ] = -1;
+		j = j + 1;
+	endwhile;
+	counter = counter + 32;
+endwhile;
+
+
+ireturn;
+

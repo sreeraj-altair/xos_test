@@ -1,0 +1,63 @@
+alias physicalSP R8;
+physicalSP = ([PTBR + 6]*512) + SP % 512 ;
+print(physicalSP);
+alias sysCallNo R9;
+sysCallNo = [ physicalSP - 1];
+print(sysCallNo);
+
+if ( sysCallNo == 1) then	//Create System Call
+	print("Enter INT1");
+	alias basicblk R10;
+	basicblk = 16;
+	while ( basicblk <= 447 ) do
+		if ([DISK_LIST + basicblk] == 0) then
+			[DISK_LIST + basicblk]=1;
+			break;
+		endif;
+		basicblk = basicblk + 1;
+	endwhile;
+	
+	alias filename R11;
+	filename = [ physicalSP - 2 ];
+	print(filename);
+	
+	alias counter R12;
+	counter = 0;
+	while(counter < 512) do
+		if([FAT + counter + 2] == -1) then
+			print(counter);
+			
+			[FAT + counter + 0] = filename;
+			[FAT + counter + 1] = 0;
+			[FAT + counter + 2] = basicblk;
+			
+			load (1,basicblk);	
+			
+			alias j R13;
+			j=0;
+			while (j < 512) do
+				[SCRATCHPAD + j] = 0;
+				j = j + 1;
+			endwhile;
+			
+			store (1,basicblk);
+			
+			store ((FAT/512),10);
+			store ((DISK_LIST/512),11);
+			[physicalSP - 12] = 0;
+			ireturn;
+			//break;
+		endif;
+		counter = counter + 8;
+	endwhile;
+
+	// Return with -1 if there is no free entry
+	if(counter == 512) then 		
+		[physicalSP - 12] = -1;		
+		ireturn;	
+	endif;
+	
+	
+endif;
+
+ireturn;
