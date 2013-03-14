@@ -5,7 +5,7 @@ enddecl
 integer main(){
 	
 	n = 0;
-	while ( n < 20 ) do
+	while ( n <= 20 ) do
 		if ( n % 2 == 0) then
 			print(n);
 		endif;
