@@ -12,7 +12,7 @@ currentPCB = READY_LIST + 32 * currentPID;
 alias physicalSP R10;
 physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
-[ currentPCB + 4 ] = [ physicalSP - 1 ] ;
+[ currentPCB + 4 ] = [ physicalSP ] ;
 [ currentPCB + 5 ] = PTBR;
 [ currentPCB + 6 ] = PTLR;
 [ currentPCB + 7 ] = R0;
@@ -24,7 +24,6 @@ physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 [ currentPCB + 13 ] = R6;	
 [ currentPCB + 14 ] = R7;	
 
-breakpoint;
 alias newPCB R11;
 alias temp R12;
 
@@ -56,9 +55,13 @@ R4 = [ newPCB + 11];
 R5 = [ newPCB + 12];
 R6 = [ newPCB + 13];
 R7 = [ newPCB + 14];
-		
-[ physicalSP ] = [ newPCB + 4 ]; // Stores IP field value of PCB on the stack 
-SP = SP + 1;
+
+alias newphysicalSP R13;
+SP = SP + 1;	
+newphysicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+[ newphysicalSP ] = [ newPCB + 4 ]; // Stores IP field value of PCB on the stack 
+
 
 [ currentPCB + 1 ] = 1;
 [ newPCB + 1 ] = 2;
