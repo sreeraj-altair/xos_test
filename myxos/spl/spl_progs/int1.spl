@@ -1,12 +1,12 @@
 alias physicalSP R8;
 physicalSP = ([PTBR + 6]*512) + SP % 512 ;
-print(physicalSP);
+//print(physicalSP);
 alias sysCallNo R9;
 sysCallNo = [ physicalSP - 1];
-print(sysCallNo);
+//print(sysCallNo);
 
 if ( sysCallNo == 1) then	//Create System Call
-	print("Enter INT1");
+	print("Entering INT 1");
 	alias basicblk R10;
 	basicblk = 16;
 	while ( basicblk <= 447 ) do
@@ -19,13 +19,13 @@ if ( sysCallNo == 1) then	//Create System Call
 	
 	alias filename R11;
 	filename = [ physicalSP - 2 ];
-	print(filename);
+	//print(filename);
 	
 	alias counter R12;
 	counter = 0;
 	while(counter < 512) do
 		if([FAT + counter + 2] == -1) then
-			print(counter);
+			//print(counter);
 			
 			[FAT + counter + 0] = filename;
 			[FAT + counter + 1] = 0;
@@ -45,8 +45,9 @@ if ( sysCallNo == 1) then	//Create System Call
 			store ((FAT/512),10);
 			store ((DISK_LIST/512),11);
 			[physicalSP - 12] = 0;
+			print("Created file");
 			ireturn;
-			//break;
+			break;
 		endif;
 		counter = counter + 8;
 	endwhile;
