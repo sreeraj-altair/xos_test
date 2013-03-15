@@ -71,10 +71,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "spl.h"
+extern FILE *yyin;
 
 
 /* Line 268 of yacc.c  */
-#line 78 "y.tab.c"
+#line 79 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -171,14 +172,14 @@ typedef union YYSTYPE
 {
 
 /* Line 293 of yacc.c  */
-#line 7 "spl.y"
+#line 8 "spl.y"
 
 	struct tree *n;
 
 
 
 /* Line 293 of yacc.c  */
-#line 182 "y.tab.c"
+#line 183 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -190,7 +191,7 @@ typedef union YYSTYPE
 
 
 /* Line 343 of yacc.c  */
-#line 194 "y.tab.c"
+#line 195 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -495,10 +496,10 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    19,    19,    26,    30,    32,    36,    39,    47,    50,
-      55,    67,    72,    78,    84,    88,    91,    94,    97,   104,
-     111,   114,   117,   125,   131,   134,   137,   140,   143,   148,
-     151,   155,   158,   161,   164,   169,   174,   179,   186,   189
+       0,    20,    20,    27,    31,    33,    37,    40,    48,    51,
+      56,    68,    73,    79,    85,    89,    92,    95,    98,   105,
+     112,   115,   118,   126,   132,   135,   138,   141,   144,   149,
+     152,   156,   159,   162,   165,   170,   175,   180,   187,   190
 };
 #endif
 
@@ -1509,7 +1510,7 @@ yyreduce:
         case 2:
 
 /* Line 1806 of yacc.c  */
-#line 19 "spl.y"
+#line 20 "spl.y"
     {
 								codegen((yyvsp[(2) - (2)].n));
 								out_linecount++;
@@ -1520,7 +1521,7 @@ yyreduce:
   case 3:
 
 /* Line 1806 of yacc.c  */
-#line 26 "spl.y"
+#line 27 "spl.y"
     {
 								add_predefined_constants();
 							}
@@ -1529,7 +1530,7 @@ yyreduce:
   case 4:
 
 /* Line 1806 of yacc.c  */
-#line 30 "spl.y"
+#line 31 "spl.y"
     {
 							}
     break;
@@ -1537,7 +1538,7 @@ yyreduce:
   case 5:
 
 /* Line 1806 of yacc.c  */
-#line 32 "spl.y"
+#line 33 "spl.y"
     {
 							}
     break;
@@ -1545,7 +1546,7 @@ yyreduce:
   case 6:
 
 /* Line 1806 of yacc.c  */
-#line 36 "spl.y"
+#line 37 "spl.y"
     {
 								insert_constant((yyvsp[(2) - (4)].n)->name,(yyvsp[(3) - (4)].n)->value);
 							}
@@ -1554,7 +1555,7 @@ yyreduce:
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 39 "spl.y"
+#line 40 "spl.y"
     {
 								if((yyvsp[(3) - (5)].n)->nodetype=='-')
 									insert_constant((yyvsp[(2) - (5)].n)->name,-1*(yyvsp[(4) - (5)].n)->value);
@@ -1566,7 +1567,7 @@ yyreduce:
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 47 "spl.y"
+#line 48 "spl.y"
     {
 								(yyval.n)=create_nonterm_node("Body",(yyvsp[(1) - (2)].n),(yyvsp[(2) - (2)].n));
 							}
@@ -1575,7 +1576,7 @@ yyreduce:
   case 9:
 
 /* Line 1806 of yacc.c  */
-#line 50 "spl.y"
+#line 51 "spl.y"
     {
 								(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
@@ -1584,7 +1585,7 @@ yyreduce:
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 55 "spl.y"
+#line 56 "spl.y"
     {
 								if((yyvsp[(1) - (4)].n)->nodetype=='R' || (yyvsp[(1) - (4)].n)->nodetype=='m')
 								{
@@ -1602,7 +1603,7 @@ yyreduce:
   case 11:
 
 /* Line 1806 of yacc.c  */
-#line 67 "spl.y"
+#line 68 "spl.y"
     {								
 								(yyval.n)=create_tree((yyvsp[(1) - (6)].n),(yyvsp[(2) - (6)].n),(yyvsp[(4) - (6)].n),NULL);
 								pop_alias();
@@ -1613,7 +1614,7 @@ yyreduce:
   case 12:
 
 /* Line 1806 of yacc.c  */
-#line 73 "spl.y"
+#line 74 "spl.y"
     {	
 								(yyval.n)=create_tree((yyvsp[(1) - (8)].n),(yyvsp[(2) - (8)].n),(yyvsp[(4) - (8)].n),(yyvsp[(6) - (8)].n));
 								pop_alias();
@@ -1624,19 +1625,19 @@ yyreduce:
   case 13:
 
 /* Line 1806 of yacc.c  */
-#line 78 "spl.y"
+#line 79 "spl.y"
     {
 								(yyval.n)=create_tree((yyvsp[(1) - (6)].n),(yyvsp[(2) - (6)].n),(yyvsp[(4) - (6)].n),NULL);
 								pop_alias();
 								depth--;
-								flag_break=0;
+								flag_break--;
 							}
     break;
 
   case 14:
 
 /* Line 1806 of yacc.c  */
-#line 84 "spl.y"
+#line 85 "spl.y"
     {	
 								push_alias((yyvsp[(2) - (4)].n)->name,(yyvsp[(3) - (4)].n)->value);
 								(yyval.n)=NULL;
@@ -1646,7 +1647,7 @@ yyreduce:
   case 15:
 
 /* Line 1806 of yacc.c  */
-#line 88 "spl.y"
+#line 89 "spl.y"
     {
 								(yyval.n)=create_tree((yyvsp[(1) - (7)].n),(yyvsp[(3) - (7)].n),(yyvsp[(5) - (7)].n),NULL);
 							}
@@ -1655,7 +1656,7 @@ yyreduce:
   case 16:
 
 /* Line 1806 of yacc.c  */
-#line 91 "spl.y"
+#line 92 "spl.y"
     {
 								(yyval.n)=create_tree((yyvsp[(1) - (7)].n),(yyvsp[(3) - (7)].n),(yyvsp[(5) - (7)].n),NULL);
 							}
@@ -1664,7 +1665,7 @@ yyreduce:
   case 17:
 
 /* Line 1806 of yacc.c  */
-#line 94 "spl.y"
+#line 95 "spl.y"
     {
 								(yyval.n)=(yyvsp[(1) - (2)].n);
 							}
@@ -1673,7 +1674,7 @@ yyreduce:
   case 18:
 
 /* Line 1806 of yacc.c  */
-#line 97 "spl.y"
+#line 98 "spl.y"
     {if(flag_break==0)
 							{
 								printf("\n%d: break or continue should be used inside while!!\n",linecount);
@@ -1686,7 +1687,7 @@ yyreduce:
   case 19:
 
 /* Line 1806 of yacc.c  */
-#line 104 "spl.y"
+#line 105 "spl.y"
     {if(flag_break==0)
 							{
 								printf("\n%d: break or continue should be used inside while!!\n",linecount);
@@ -1699,7 +1700,7 @@ yyreduce:
   case 20:
 
 /* Line 1806 of yacc.c  */
-#line 111 "spl.y"
+#line 112 "spl.y"
     {	
 							(yyval.n)=(yyvsp[(1) - (2)].n);
 							}
@@ -1708,7 +1709,7 @@ yyreduce:
   case 21:
 
 /* Line 1806 of yacc.c  */
-#line 114 "spl.y"
+#line 115 "spl.y"
     {	
 							(yyval.n)=(yyvsp[(1) - (2)].n);
 							}
@@ -1717,7 +1718,7 @@ yyreduce:
   case 22:
 
 /* Line 1806 of yacc.c  */
-#line 117 "spl.y"
+#line 118 "spl.y"
     {	
 								if((yyvsp[(2) - (3)].n)->nodetype!='R')
 								{
@@ -1731,7 +1732,7 @@ yyreduce:
   case 23:
 
 /* Line 1806 of yacc.c  */
-#line 125 "spl.y"
+#line 126 "spl.y"
     {
 								(yyval.n)=create_tree((yyvsp[(1) - (3)].n),(yyvsp[(2) - (3)].n),NULL,NULL);
 							}
@@ -1740,7 +1741,7 @@ yyreduce:
   case 24:
 
 /* Line 1806 of yacc.c  */
-#line 131 "spl.y"
+#line 132 "spl.y"
     {
 								(yyval.n)=create_tree((yyvsp[(2) - (3)].n),(yyvsp[(1) - (3)].n),(yyvsp[(3) - (3)].n),NULL);
 							}
@@ -1749,7 +1750,7 @@ yyreduce:
   case 25:
 
 /* Line 1806 of yacc.c  */
-#line 134 "spl.y"
+#line 135 "spl.y"
     {
 								(yyval.n)=create_tree((yyvsp[(2) - (3)].n),(yyvsp[(1) - (3)].n),(yyvsp[(3) - (3)].n),NULL);
 							}
@@ -1758,7 +1759,7 @@ yyreduce:
   case 26:
 
 /* Line 1806 of yacc.c  */
-#line 137 "spl.y"
+#line 138 "spl.y"
     {
 								(yyval.n)=create_tree((yyvsp[(2) - (3)].n),(yyvsp[(1) - (3)].n),(yyvsp[(3) - (3)].n),NULL);
 							}
@@ -1767,7 +1768,7 @@ yyreduce:
   case 27:
 
 /* Line 1806 of yacc.c  */
-#line 140 "spl.y"
+#line 141 "spl.y"
     {
 								(yyval.n)=create_tree((yyvsp[(2) - (3)].n),(yyvsp[(1) - (3)].n),(yyvsp[(3) - (3)].n),NULL);
 							}
@@ -1776,7 +1777,7 @@ yyreduce:
   case 28:
 
 /* Line 1806 of yacc.c  */
-#line 143 "spl.y"
+#line 144 "spl.y"
     {
 								if((yyvsp[(1) - (2)].n)->nodetype=='-')
 									(yyvsp[(2) - (2)].n)->value=(yyvsp[(2) - (2)].n)->value*-1;
@@ -1787,7 +1788,7 @@ yyreduce:
   case 29:
 
 /* Line 1806 of yacc.c  */
-#line 148 "spl.y"
+#line 149 "spl.y"
     {
 								(yyval.n)=create_tree((yyvsp[(1) - (2)].n),(yyvsp[(2) - (2)].n),NULL,NULL);
 							}
@@ -1796,7 +1797,7 @@ yyreduce:
   case 30:
 
 /* Line 1806 of yacc.c  */
-#line 151 "spl.y"
+#line 152 "spl.y"
     {
 								(yyval.n)=create_nonterm_node("addr",(yyvsp[(2) - (3)].n),NULL);
 								(yyval.n)->nodetype='m';
@@ -1806,7 +1807,7 @@ yyreduce:
   case 31:
 
 /* Line 1806 of yacc.c  */
-#line 155 "spl.y"
+#line 156 "spl.y"
     {
 								(yyval.n)=(yyvsp[(2) - (3)].n);
 							}
@@ -1815,7 +1816,7 @@ yyreduce:
   case 32:
 
 /* Line 1806 of yacc.c  */
-#line 158 "spl.y"
+#line 159 "spl.y"
     {	
 								(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
@@ -1824,7 +1825,7 @@ yyreduce:
   case 33:
 
 /* Line 1806 of yacc.c  */
-#line 161 "spl.y"
+#line 162 "spl.y"
     {
 								(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
@@ -1833,7 +1834,7 @@ yyreduce:
   case 34:
 
 /* Line 1806 of yacc.c  */
-#line 164 "spl.y"
+#line 165 "spl.y"
     {
 								(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
@@ -1842,7 +1843,7 @@ yyreduce:
   case 35:
 
 /* Line 1806 of yacc.c  */
-#line 169 "spl.y"
+#line 170 "spl.y"
     {
 								depth++;
 								(yyval.n)=(yyvsp[(1) - (1)].n);
@@ -1852,7 +1853,7 @@ yyreduce:
   case 36:
 
 /* Line 1806 of yacc.c  */
-#line 174 "spl.y"
+#line 175 "spl.y"
     {
 								pop_alias();
 							}
@@ -1861,10 +1862,10 @@ yyreduce:
   case 37:
 
 /* Line 1806 of yacc.c  */
-#line 179 "spl.y"
+#line 180 "spl.y"
     {
 								depth++;
-								flag_break=1;
+								flag_break++;
 								(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
     break;
@@ -1872,7 +1873,7 @@ yyreduce:
   case 38:
 
 /* Line 1806 of yacc.c  */
-#line 186 "spl.y"
+#line 187 "spl.y"
     {							
 								(yyval.n)=substitute_id((yyvsp[(1) - (1)].n));
 							}
@@ -1881,7 +1882,7 @@ yyreduce:
   case 39:
 
 /* Line 1806 of yacc.c  */
-#line 189 "spl.y"
+#line 190 "spl.y"
     {
 								(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
@@ -1890,7 +1891,7 @@ yyreduce:
 
 
 /* Line 1806 of yacc.c  */
-#line 1894 "y.tab.c"
+#line 1895 "y.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2121,77 +2122,110 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 193 "spl.y"
+#line 194 "spl.y"
 
 int main (int argc,char **argv)
 {	
-	char op_name[15];
-	if(argc < 2)
+	FILE *input_fp;
+	char filename[200],ch;
+	char op_name[200];
+	if(argc < 3)
 	{
 		printf("Incorrect Usage.\nSee usage manual\n");
 		exit(0);
 	}
+	strcpy(filename,argv[2]);
+	expandpath(filename);
+	input_fp = fopen(filename,"r");
+	if(!input_fp)
+	{
+		printf("Invalid input file\n");
+		return 0;
+	}
+	yyin = input_fp;
+	remfilename(filename);
+	strcpy( op_name, filename );
 	if(strcmp(argv[1],"--os") == 0)
 	{
-		strcpy(op_name,"os_startup.xsm");
+		strcat(op_name,"os_startup.xsm");
 		addrBaseVal = 1 * 512;
 	}
 	else if(strcmp(argv[1],"--exhandler") == 0)
 	{
-		strcpy(op_name,"exhandler.xsm");
+		strcat(op_name,"exhandler.xsm");
 		addrBaseVal = 7 * 512;
 	}
 	else if(strcmp(argv[1],"--int=timer") == 0)
 	{
-		strcpy(op_name,"timer.xsm");
+		strcat(op_name,"timer.xsm");
 		addrBaseVal = 8 * 512;
 	}
 	else if(strcmp(argv[1],"--int=1") == 0)
 	{
-		strcpy(op_name,"int1.xsm");
+		strcat(op_name,"int1.xsm");
 		addrBaseVal = 9 * 512;
 	}
 	else if(strcmp(argv[1],"--int=2") == 0)
 	{
-		strcpy(op_name,"int2.xsm");
+		strcat(op_name,"int2.xsm");
 		addrBaseVal = 10 * 512;
 	}
 	else if(strcmp(argv[1],"--int=3") == 0)
 	{
-		strcpy(op_name,"int3.xsm");
+		strcat(op_name,"int3.xsm");
 		addrBaseVal = 11 * 512;
 	}
 	else if(strcmp(argv[1],"--int=4") == 0)
 	{
-		strcpy(op_name,"int4.xsm");
+		strcat(op_name,"int4.xsm");
 		addrBaseVal = 12 * 512;
 	}
 	else if(strcmp(argv[1],"--int=5") == 0)
 	{
-		strcpy(op_name,"int5.xsm");
+		strcat(op_name,"int5.xsm");
 		addrBaseVal = 13 * 512;
 	}
 	else if(strcmp(argv[1],"--int=6") == 0)
 	{
-		strcpy(op_name,"int6.xsm");
+		strcat(op_name,"int6.xsm");
 		addrBaseVal = 14 * 512;
 	}
 	else if(strcmp(argv[1],"--int=7") == 0)
 	{
-		strcpy(op_name,"int7.xsm");
+		strcat(op_name,"int7.xsm");
 		addrBaseVal = 15 * 512;
 	}
 	else
 	{
 		printf("Invalid arguement %s\n", argv[1]);
+		fclose(input_fp);
 		exit(0);
-	}	
-	fp=fopen(op_name,"w");
+	}
+	fp=fopen(".temp","w");
 	out_linecount++;
 	fprintf(fp,"START\n");
-	return yyparse();
+	yyparse();
+	fclose(input_fp);
+	fclose(fp);
+	input_fp = fopen(".temp","r");
+	if(!input_fp)
+	{
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	fp = fopen(op_name,"w");
+	if(!fp)
+	{
+		fclose(input_fp);
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	while( ( ch = fgetc(input_fp) ) != EOF )
+		fputc(ch, fp);
+	fclose(input_fp);
+	fclose(fp);	
+	return 0;
 }
-
 int yyerror (char *msg) 
 {
 	return fprintf (stderr, "%d: %s\n",linecount,msg);

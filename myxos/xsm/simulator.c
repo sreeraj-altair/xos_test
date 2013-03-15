@@ -2157,7 +2157,6 @@ void Executeoneinstr(int instr)
 			exit(0);
 			break;			
 		case END:
-			//storeInteger(reg[IP_REG],getInteger(reg[IP_REG])+WORDS_PERINSTR);
 			break;
 		
 		case BRKP:

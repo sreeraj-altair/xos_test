@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "apl.h"
+extern FILE *yyin;
 %}
 %union
 {
@@ -295,16 +296,50 @@ SysCall:	SYSCREA '(' param ')'			{$$=syscheck($1,$3,1);
 		;
 		
 %%
-
-int main (void)
+int main (int argc, char **argv)
 {	
-	fp=fopen("./apcode.xsm","wb");
+	FILE *input_fp;
+	char filename[200],ch;
+	strcpy(filename,argv[1]);	
+	if(argc < 2)
+	{
+		printf("Specify an input filename\n");
+		return 0;
+	}
+	expandpath(filename);
+	input_fp = fopen(filename,"r");
+	if(!input_fp)
+	{
+		printf("Invalid input file\n");
+		return 0;
+	}
+	yyin = input_fp;
+	changeext(filename);
+	fp=fopen(".temp","wb");
 	out_linecount++; fprintf(fp,"START\n");
 	out_linecount++; fprintf(fp,"MOV SP, 1536\n");
 	out_linecount++; fprintf(fp,"MOV BP, 1536\n");
-	return yyparse();
+	yyparse();
+	fclose(input_fp);
+	input_fp = fopen(".temp","r");
+	if(!input_fp)
+	{
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	fp = fopen(filename,"wb");
+	if(!fp)
+	{
+		fclose(input_fp);
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	while( ( ch = fgetc(input_fp) ) != EOF )
+		fputc(ch, fp);
+	fclose(input_fp);
+	fclose(fp);	
+	return 0;	
 }
-
 int yyerror (char *msg) 
 {
 	return fprintf (stderr, "%d: %s\n",linecount,msg);

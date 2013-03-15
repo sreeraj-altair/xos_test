@@ -71,10 +71,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "apl.h"
+extern FILE *yyin;
 
 
 /* Line 268 of yacc.c  */
-#line 78 "y.tab.c"
+#line 79 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -193,7 +194,7 @@ typedef union YYSTYPE
 {
 
 /* Line 293 of yacc.c  */
-#line 7 "apl.y"
+#line 8 "apl.y"
 
 	struct tree *n;
 	struct ArgStruct *arg;
@@ -201,7 +202,7 @@ typedef union YYSTYPE
 
 
 /* Line 293 of yacc.c  */
-#line 205 "y.tab.c"
+#line 206 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -213,7 +214,7 @@ typedef union YYSTYPE
 
 
 /* Line 343 of yacc.c  */
-#line 217 "y.tab.c"
+#line 218 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -538,15 +539,15 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    22,    22,    25,    32,    40,    42,    45,    47,    49,
-      52,    54,    57,    59,    61,    70,    72,    75,    86,    88,
-      92,    99,   104,   106,   108,   112,   115,   117,   121,   123,
-     127,   130,   134,   145,   157,   160,   162,   165,   169,   171,
-     174,   178,   180,   184,   186,   188,   191,   193,   195,   197,
-     199,   201,   203,   210,   219,   225,   232,   234,   236,   238,
-     240,   242,   244,   246,   248,   250,   252,   256,   258,   260,
-     269,   271,   273,   277,   279,   281,   283,   285,   287,   289,
-     291,   293
+       0,    23,    23,    26,    33,    41,    43,    46,    48,    50,
+      53,    55,    58,    60,    62,    71,    73,    76,    87,    89,
+      93,   100,   105,   107,   109,   113,   116,   118,   122,   124,
+     128,   131,   135,   146,   158,   161,   163,   166,   170,   172,
+     175,   179,   181,   185,   187,   189,   192,   194,   196,   198,
+     200,   202,   204,   211,   220,   226,   233,   235,   237,   239,
+     241,   243,   245,   247,   249,   251,   253,   257,   259,   261,
+     270,   272,   274,   278,   280,   282,   284,   286,   288,   290,
+     292,   294
 };
 #endif
 
@@ -1613,14 +1614,14 @@ yyreduce:
         case 2:
 
 /* Line 1806 of yacc.c  */
-#line 22 "apl.y"
+#line 23 "apl.y"
     {}
     break;
 
   case 3:
 
 /* Line 1806 of yacc.c  */
-#line 25 "apl.y"
+#line 26 "apl.y"
     {
 							fflush(fp);
 							main_pos = ftell(fp);
@@ -1632,7 +1633,7 @@ yyreduce:
   case 4:
 
 /* Line 1806 of yacc.c  */
-#line 32 "apl.y"
+#line 33 "apl.y"
     {
 							fflush(fp);
 							main_pos = ftell(fp);
@@ -1644,28 +1645,28 @@ yyreduce:
   case 5:
 
 /* Line 1806 of yacc.c  */
-#line 40 "apl.y"
+#line 41 "apl.y"
     {}
     break;
 
   case 6:
 
 /* Line 1806 of yacc.c  */
-#line 42 "apl.y"
+#line 43 "apl.y"
     {}
     break;
 
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 45 "apl.y"
+#line 46 "apl.y"
     {}
     break;
 
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 47 "apl.y"
+#line 48 "apl.y"
     {m=0;
 							}
     break;
@@ -1673,7 +1674,7 @@ yyreduce:
   case 9:
 
 /* Line 1806 of yacc.c  */
-#line 49 "apl.y"
+#line 50 "apl.y"
     {m=3;
 							}
     break;
@@ -1681,21 +1682,21 @@ yyreduce:
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 52 "apl.y"
+#line 53 "apl.y"
     {}
     break;
 
   case 11:
 
 /* Line 1806 of yacc.c  */
-#line 54 "apl.y"
+#line 55 "apl.y"
     {}
     break;
 
   case 12:
 
 /* Line 1806 of yacc.c  */
-#line 57 "apl.y"
+#line 58 "apl.y"
     {install((yyvsp[(1) - (1)].n),m,1);
 							}
     break;
@@ -1703,7 +1704,7 @@ yyreduce:
   case 13:
 
 /* Line 1806 of yacc.c  */
-#line 59 "apl.y"
+#line 60 "apl.y"
     {install((yyvsp[(1) - (4)].n),m,(yyvsp[(3) - (4)].n)->value);
 							}
     break;
@@ -1711,7 +1712,7 @@ yyreduce:
   case 14:
 
 /* Line 1806 of yacc.c  */
-#line 61 "apl.y"
+#line 62 "apl.y"
     {finstall((yyvsp[(1) - (4)].n),m,(yyvsp[(3) - (4)].arg));
 							/*while($3!=NULL)
 							{
@@ -1724,21 +1725,21 @@ yyreduce:
   case 15:
 
 /* Line 1806 of yacc.c  */
-#line 70 "apl.y"
+#line 71 "apl.y"
     {}
     break;
 
   case 16:
 
 /* Line 1806 of yacc.c  */
-#line 72 "apl.y"
+#line 73 "apl.y"
     {}
     break;
 
   case 17:
 
 /* Line 1806 of yacc.c  */
-#line 75 "apl.y"
+#line 76 "apl.y"
     {/*struct Lsymbol *temp=Lroot;
 									while(temp!=NULL)
 									{
@@ -1754,7 +1755,7 @@ yyreduce:
   case 18:
 
 /* Line 1806 of yacc.c  */
-#line 86 "apl.y"
+#line 87 "apl.y"
     {m3=0;
 							}
     break;
@@ -1762,7 +1763,7 @@ yyreduce:
   case 19:
 
 /* Line 1806 of yacc.c  */
-#line 88 "apl.y"
+#line 89 "apl.y"
     {m3=3;
 							}
     break;
@@ -1770,7 +1771,7 @@ yyreduce:
   case 20:
 
 /* Line 1806 of yacc.c  */
-#line 92 "apl.y"
+#line 93 "apl.y"
     {memcount=1;
 							(yyvsp[(1) - (1)].n)->type=m3;
 							funcid=(yyvsp[(1) - (1)].n);
@@ -1781,7 +1782,7 @@ yyreduce:
   case 21:
 
 /* Line 1806 of yacc.c  */
-#line 99 "apl.y"
+#line 100 "apl.y"
     {fdefcheck(funcid,(yyvsp[(1) - (1)].arg),m3);
 							arglistinstall(funcid);
 							}
@@ -1790,7 +1791,7 @@ yyreduce:
   case 22:
 
 /* Line 1806 of yacc.c  */
-#line 104 "apl.y"
+#line 105 "apl.y"
     {(yyval.arg)=NULL;
 							}
     break;
@@ -1798,7 +1799,7 @@ yyreduce:
   case 23:
 
 /* Line 1806 of yacc.c  */
-#line 106 "apl.y"
+#line 107 "apl.y"
     {(yyval.arg)=(yyvsp[(1) - (1)].arg);							
 							}
     break;
@@ -1806,7 +1807,7 @@ yyreduce:
   case 24:
 
 /* Line 1806 of yacc.c  */
-#line 108 "apl.y"
+#line 109 "apl.y"
     {(yyval.arg)=makeargtree((yyvsp[(1) - (3)].arg),(yyvsp[(3) - (3)].arg));							
 							}
     break;
@@ -1814,14 +1815,14 @@ yyreduce:
   case 25:
 
 /* Line 1806 of yacc.c  */
-#line 112 "apl.y"
+#line 113 "apl.y"
     {(yyval.arg)=(yyvsp[(2) - (2)].arg);}
     break;
 
   case 26:
 
 /* Line 1806 of yacc.c  */
-#line 115 "apl.y"
+#line 116 "apl.y"
     {m2=0;
 							}
     break;
@@ -1829,7 +1830,7 @@ yyreduce:
   case 27:
 
 /* Line 1806 of yacc.c  */
-#line 117 "apl.y"
+#line 118 "apl.y"
     {m2=3;
 							}
     break;
@@ -1837,7 +1838,7 @@ yyreduce:
   case 28:
 
 /* Line 1806 of yacc.c  */
-#line 121 "apl.y"
+#line 122 "apl.y"
     {(yyval.arg)=(yyvsp[(1) - (1)].arg);
 							}
     break;
@@ -1845,7 +1846,7 @@ yyreduce:
   case 29:
 
 /* Line 1806 of yacc.c  */
-#line 123 "apl.y"
+#line 124 "apl.y"
     {(yyval.arg)=makeargtree((yyvsp[(1) - (3)].arg),(yyvsp[(3) - (3)].arg));
 							}
     break;
@@ -1853,7 +1854,7 @@ yyreduce:
   case 30:
 
 /* Line 1806 of yacc.c  */
-#line 127 "apl.y"
+#line 128 "apl.y"
     {
 							(yyval.arg)=makearg((yyvsp[(1) - (1)].n)->name,m2,0);
 							}
@@ -1862,7 +1863,7 @@ yyreduce:
   case 31:
 
 /* Line 1806 of yacc.c  */
-#line 130 "apl.y"
+#line 131 "apl.y"
     {(yyval.arg)=makearg((yyvsp[(2) - (2)].n)->name,m2,1);
 							}
     break;
@@ -1870,7 +1871,7 @@ yyreduce:
   case 32:
 
 /* Line 1806 of yacc.c  */
-#line 134 "apl.y"
+#line 135 "apl.y"
     {codegen((yyvsp[(6) - (7)].n));
 							out_linecount+=2;
 							fprintf(fp, "MOV R0, 10\nPUSH R0\n");
@@ -1885,7 +1886,7 @@ yyreduce:
   case 33:
 
 /* Line 1806 of yacc.c  */
-#line 145 "apl.y"
+#line 146 "apl.y"
     {m3=0;
 							memcount=1;
 							funcid=NULL;
@@ -1901,28 +1902,28 @@ yyreduce:
   case 34:
 
 /* Line 1806 of yacc.c  */
-#line 157 "apl.y"
+#line 158 "apl.y"
     {}
     break;
 
   case 35:
 
 /* Line 1806 of yacc.c  */
-#line 160 "apl.y"
+#line 161 "apl.y"
     {}
     break;
 
   case 36:
 
 /* Line 1806 of yacc.c  */
-#line 162 "apl.y"
+#line 163 "apl.y"
     {}
     break;
 
   case 37:
 
 /* Line 1806 of yacc.c  */
-#line 165 "apl.y"
+#line 166 "apl.y"
     {Linstall((yyvsp[(1) - (1)].n),m,1);
 							}
     break;
@@ -1930,7 +1931,7 @@ yyreduce:
   case 38:
 
 /* Line 1806 of yacc.c  */
-#line 169 "apl.y"
+#line 170 "apl.y"
     {(yyval.n)=nontermcreate("Body",(yyvsp[(1) - (2)].n),(yyvsp[(2) - (2)].n));			
 							}
     break;
@@ -1938,7 +1939,7 @@ yyreduce:
   case 39:
 
 /* Line 1806 of yacc.c  */
-#line 171 "apl.y"
+#line 172 "apl.y"
     {(yyval.n)=nontermcreate("Body",(yyvsp[(1) - (1)].n),NULL);			
 							}
     break;
@@ -1946,7 +1947,7 @@ yyreduce:
   case 40:
 
 /* Line 1806 of yacc.c  */
-#line 174 "apl.y"
+#line 175 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (3)].n),(yyvsp[(2) - (3)].n),NULL,NULL);
 							}
     break;
@@ -1954,7 +1955,7 @@ yyreduce:
   case 41:
 
 /* Line 1806 of yacc.c  */
-#line 178 "apl.y"
+#line 179 "apl.y"
     {(yyval.n)=nontermcreate("stmtlist",(yyvsp[(1) - (2)].n),(yyvsp[(2) - (2)].n));
 							}
     break;
@@ -1962,7 +1963,7 @@ yyreduce:
   case 42:
 
 /* Line 1806 of yacc.c  */
-#line 180 "apl.y"
+#line 181 "apl.y"
     {(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
     break;
@@ -1970,7 +1971,7 @@ yyreduce:
   case 43:
 
 /* Line 1806 of yacc.c  */
-#line 184 "apl.y"
+#line 185 "apl.y"
     {(yyval.n)=maketree((yyvsp[(2) - (4)].n),(yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),NULL);
 							}
     break;
@@ -1978,7 +1979,7 @@ yyreduce:
   case 44:
 
 /* Line 1806 of yacc.c  */
-#line 186 "apl.y"
+#line 187 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (5)].n),(yyvsp[(3) - (5)].n),NULL,NULL);
 							}
     break;
@@ -1986,7 +1987,7 @@ yyreduce:
   case 45:
 
 /* Line 1806 of yacc.c  */
-#line 188 "apl.y"
+#line 189 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (5)].n),(yyvsp[(3) - (5)].n),NULL,NULL);
 							}
     break;
@@ -1994,7 +1995,7 @@ yyreduce:
   case 46:
 
 /* Line 1806 of yacc.c  */
-#line 191 "apl.y"
+#line 192 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (6)].n),(yyvsp[(2) - (6)].n),(yyvsp[(4) - (6)].n),NULL);flag_decl--;
 										}
     break;
@@ -2002,7 +2003,7 @@ yyreduce:
   case 47:
 
 /* Line 1806 of yacc.c  */
-#line 193 "apl.y"
+#line 194 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (8)].n),(yyvsp[(2) - (8)].n),(yyvsp[(4) - (8)].n),(yyvsp[(6) - (8)].n));flag_decl--;
 										}
     break;
@@ -2010,7 +2011,7 @@ yyreduce:
   case 48:
 
 /* Line 1806 of yacc.c  */
-#line 195 "apl.y"
+#line 196 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (6)].n),(yyvsp[(2) - (6)].n),(yyvsp[(4) - (6)].n),NULL);flag_decl--;flag_break=0;
 										}
     break;
@@ -2018,7 +2019,7 @@ yyreduce:
   case 49:
 
 /* Line 1806 of yacc.c  */
-#line 197 "apl.y"
+#line 198 "apl.y"
     {(yyval.n)=NULL;
 							}
     break;
@@ -2026,7 +2027,7 @@ yyreduce:
   case 50:
 
 /* Line 1806 of yacc.c  */
-#line 199 "apl.y"
+#line 200 "apl.y"
     {(yyval.n)=(yyvsp[(1) - (4)].n);		
 							}
     break;
@@ -2034,7 +2035,7 @@ yyreduce:
   case 51:
 
 /* Line 1806 of yacc.c  */
-#line 201 "apl.y"
+#line 202 "apl.y"
     {(yyval.n)=(yyvsp[(1) - (4)].n);		
 							}
     break;
@@ -2042,7 +2043,7 @@ yyreduce:
   case 52:
 
 /* Line 1806 of yacc.c  */
-#line 203 "apl.y"
+#line 204 "apl.y"
     {if(flag_break==0)
 							{
 								printf("\n%d: break or continue should be used inside while!!\n",linecount);
@@ -2055,7 +2056,7 @@ yyreduce:
   case 53:
 
 /* Line 1806 of yacc.c  */
-#line 210 "apl.y"
+#line 211 "apl.y"
     {if(flag_break==0)
 							{
 								printf("\n%d: break or continue should be used inside while!!\n",linecount);
@@ -2068,7 +2069,7 @@ yyreduce:
   case 54:
 
 /* Line 1806 of yacc.c  */
-#line 219 "apl.y"
+#line 220 "apl.y"
     {
 								flag_decl++;
 								(yyval.n)=(yyvsp[(1) - (1)].n);
@@ -2078,7 +2079,7 @@ yyreduce:
   case 55:
 
 /* Line 1806 of yacc.c  */
-#line 225 "apl.y"
+#line 226 "apl.y"
     {
 								flag_decl++;
 								flag_break=1;
@@ -2089,7 +2090,7 @@ yyreduce:
   case 56:
 
 /* Line 1806 of yacc.c  */
-#line 232 "apl.y"
+#line 233 "apl.y"
     {(yyval.n)=maketree((yyvsp[(2) - (3)].n),(yyvsp[(1) - (3)].n),(yyvsp[(3) - (3)].n),NULL);
 							}
     break;
@@ -2097,7 +2098,7 @@ yyreduce:
   case 57:
 
 /* Line 1806 of yacc.c  */
-#line 234 "apl.y"
+#line 235 "apl.y"
     {(yyval.n)=maketree((yyvsp[(2) - (3)].n),(yyvsp[(1) - (3)].n),(yyvsp[(3) - (3)].n),NULL);
 							}
     break;
@@ -2105,7 +2106,7 @@ yyreduce:
   case 58:
 
 /* Line 1806 of yacc.c  */
-#line 236 "apl.y"
+#line 237 "apl.y"
     {(yyval.n)=maketree((yyvsp[(2) - (3)].n),(yyvsp[(1) - (3)].n),(yyvsp[(3) - (3)].n),NULL);
 							}
     break;
@@ -2113,7 +2114,7 @@ yyreduce:
   case 59:
 
 /* Line 1806 of yacc.c  */
-#line 238 "apl.y"
+#line 239 "apl.y"
     {(yyval.n)=maketree((yyvsp[(2) - (3)].n),(yyvsp[(1) - (3)].n),(yyvsp[(3) - (3)].n),NULL);
 							}
     break;
@@ -2121,7 +2122,7 @@ yyreduce:
   case 60:
 
 /* Line 1806 of yacc.c  */
-#line 240 "apl.y"
+#line 241 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (2)].n),(yyvsp[(2) - (2)].n),NULL,NULL);
 							}
     break;
@@ -2129,7 +2130,7 @@ yyreduce:
   case 61:
 
 /* Line 1806 of yacc.c  */
-#line 242 "apl.y"
+#line 243 "apl.y"
     {(yyval.n)=(yyvsp[(2) - (3)].n);
 							}
     break;
@@ -2137,7 +2138,7 @@ yyreduce:
   case 62:
 
 /* Line 1806 of yacc.c  */
-#line 244 "apl.y"
+#line 245 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (2)].n),(yyvsp[(2) - (2)].n),NULL,NULL);
 							}
     break;
@@ -2145,7 +2146,7 @@ yyreduce:
   case 63:
 
 /* Line 1806 of yacc.c  */
-#line 246 "apl.y"
+#line 247 "apl.y"
     {(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
     break;
@@ -2153,7 +2154,7 @@ yyreduce:
   case 64:
 
 /* Line 1806 of yacc.c  */
-#line 248 "apl.y"
+#line 249 "apl.y"
     {(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
     break;
@@ -2161,7 +2162,7 @@ yyreduce:
   case 65:
 
 /* Line 1806 of yacc.c  */
-#line 250 "apl.y"
+#line 251 "apl.y"
     {(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
     break;
@@ -2169,7 +2170,7 @@ yyreduce:
   case 66:
 
 /* Line 1806 of yacc.c  */
-#line 252 "apl.y"
+#line 253 "apl.y"
     {(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
     break;
@@ -2177,7 +2178,7 @@ yyreduce:
   case 67:
 
 /* Line 1806 of yacc.c  */
-#line 256 "apl.y"
+#line 257 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (1)].n),NULL,NULL,NULL);
 							}
     break;
@@ -2185,7 +2186,7 @@ yyreduce:
   case 68:
 
 /* Line 1806 of yacc.c  */
-#line 258 "apl.y"
+#line 259 "apl.y"
     {(yyval.n)=maketree((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),NULL,NULL);
 							}
     break;
@@ -2193,7 +2194,7 @@ yyreduce:
   case 69:
 
 /* Line 1806 of yacc.c  */
-#line 260 "apl.y"
+#line 261 "apl.y"
     {(yyval.n)=functioncall((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n));
 							/*while($3!=NULL)
 							{
@@ -2206,7 +2207,7 @@ yyreduce:
   case 70:
 
 /* Line 1806 of yacc.c  */
-#line 269 "apl.y"
+#line 270 "apl.y"
     {(yyval.n)=NULL;
 							}
     break;
@@ -2214,7 +2215,7 @@ yyreduce:
   case 71:
 
 /* Line 1806 of yacc.c  */
-#line 271 "apl.y"
+#line 272 "apl.y"
     {(yyval.n)=(yyvsp[(1) - (1)].n);
 							}
     break;
@@ -2222,7 +2223,7 @@ yyreduce:
   case 72:
 
 /* Line 1806 of yacc.c  */
-#line 273 "apl.y"
+#line 274 "apl.y"
     {(yyval.n)=makeparam((yyvsp[(1) - (3)].n),(yyvsp[(3) - (3)].n));
 							}
     break;
@@ -2230,7 +2231,7 @@ yyreduce:
   case 73:
 
 /* Line 1806 of yacc.c  */
-#line 277 "apl.y"
+#line 278 "apl.y"
     {(yyval.n)=syscheck((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),1);
 							}
     break;
@@ -2238,7 +2239,7 @@ yyreduce:
   case 74:
 
 /* Line 1806 of yacc.c  */
-#line 279 "apl.y"
+#line 280 "apl.y"
     {(yyval.n)=syscheck((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),1);
 							}
     break;
@@ -2246,7 +2247,7 @@ yyreduce:
   case 75:
 
 /* Line 1806 of yacc.c  */
-#line 281 "apl.y"
+#line 282 "apl.y"
     {(yyval.n)=syscheck((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),5);
 							}
     break;
@@ -2254,7 +2255,7 @@ yyreduce:
   case 76:
 
 /* Line 1806 of yacc.c  */
-#line 283 "apl.y"
+#line 284 "apl.y"
     {(yyval.n)=syscheck((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),3);
 							}
     break;
@@ -2262,7 +2263,7 @@ yyreduce:
   case 77:
 
 /* Line 1806 of yacc.c  */
-#line 285 "apl.y"
+#line 286 "apl.y"
     {(yyval.n)=syscheck((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),2);
 							}
     break;
@@ -2270,7 +2271,7 @@ yyreduce:
   case 78:
 
 /* Line 1806 of yacc.c  */
-#line 287 "apl.y"
+#line 288 "apl.y"
     {(yyval.n)=syscheck((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),4);
 							}
     break;
@@ -2278,7 +2279,7 @@ yyreduce:
   case 79:
 
 /* Line 1806 of yacc.c  */
-#line 289 "apl.y"
+#line 290 "apl.y"
     {(yyval.n)=syscheck((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),1);
 							}
     break;
@@ -2286,7 +2287,7 @@ yyreduce:
   case 80:
 
 /* Line 1806 of yacc.c  */
-#line 291 "apl.y"
+#line 292 "apl.y"
     {(yyval.n)=(yyvsp[(1) - (3)].n);
 							}
     break;
@@ -2294,7 +2295,7 @@ yyreduce:
   case 81:
 
 /* Line 1806 of yacc.c  */
-#line 293 "apl.y"
+#line 294 "apl.y"
     {(yyval.n)=syscheck((yyvsp[(1) - (4)].n),(yyvsp[(3) - (4)].n),1);
 							}
     break;
@@ -2302,7 +2303,7 @@ yyreduce:
 
 
 /* Line 1806 of yacc.c  */
-#line 2306 "y.tab.c"
+#line 2307 "y.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2533,18 +2534,52 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 297 "apl.y"
+#line 298 "apl.y"
 
-
-int main (void)
+int main (int argc, char **argv)
 {	
-	fp=fopen("./apcode.xsm","wb");
+	FILE *input_fp;
+	char filename[200],ch;
+	strcpy(filename,argv[1]);	
+	if(argc < 2)
+	{
+		printf("Specify an input filename\n");
+		return 0;
+	}
+	expandpath(filename);
+	input_fp = fopen(filename,"r");
+	if(!input_fp)
+	{
+		printf("Invalid input file\n");
+		return 0;
+	}
+	yyin = input_fp;
+	changeext(filename);
+	fp=fopen(".temp","wb");
 	out_linecount++; fprintf(fp,"START\n");
 	out_linecount++; fprintf(fp,"MOV SP, 1536\n");
 	out_linecount++; fprintf(fp,"MOV BP, 1536\n");
-	return yyparse();
+	yyparse();
+	fclose(input_fp);
+	input_fp = fopen(".temp","r");
+	if(!input_fp)
+	{
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	fp = fopen(filename,"wb");
+	if(!fp)
+	{
+		fclose(input_fp);
+		printf("Writing compiled code to file failed\n");
+		return 0;
+	}
+	while( ( ch = fgetc(input_fp) ) != EOF )
+		fputc(ch, fp);
+	fclose(input_fp);
+	fclose(fp);	
+	return 0;	
 }
-
 int yyerror (char *msg) 
 {
 	return fprintf (stderr, "%d: %s\n",linecount,msg);
