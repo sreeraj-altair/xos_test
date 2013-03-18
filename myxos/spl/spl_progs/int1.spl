@@ -4,7 +4,10 @@ physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 alias sysCallNo R9;
 sysCallNo = [physicalSP - 1];
 
-if ( sysCallNo == 1) then	//Create System Call
+alias filename R11;
+filename = [physicalSP - 3];
+
+if (sysCallNo == 1) then	//Create System Call
 	alias basicblk R10;
 	
 	basicblk = 0;
@@ -18,9 +21,6 @@ if ( sysCallNo == 1) then	//Create System Call
 		[physicalSP - 2] = -1;		
 		ireturn;
 	endif;
-	
-	alias filename R11;
-	filename = [ physicalSP - 3 ];
 	
 	alias counter R12;
 	counter = 0;				//Check if file already exists
@@ -65,9 +65,61 @@ if ( sysCallNo == 1) then	//Create System Call
 
 	if(counter == 512) then 		// Return with -1 if there is no free entry
 		[physicalSP - 2] = -1;	
-		print("FAT full");	
+		//print("FAT full");	
 		ireturn;	
 	endif;
+endif;
+
+if (sysCallNo == 4) then		//Delete system call
+	
+	alias i R13;
+	alias basicblok R12;
+	i = 0;
+	print(filename);
+	while (i < 512) do
+		if ([FAT + i] == filename) then
+			basicblok = [FAT + i + 2];
+			break;
+		endif;
+		i = i + 8;
+	endwhile;
+	
+	if (i >= 512) then
+		[physicalSP - 2] = -1;
+		//print(i);
+		ireturn;
+	endif;
+	
+	
+	alias j R14;
+	j = 0;
+	while (j < 128) do
+		if ([FILE_TABLE + j] == filename) then
+			[physicalSP - 2] = -1;
+			//print("File open!");
+			ireturn;
+		endif;
+		j = j + 2;
+	endwhile; 
+	
+	load (1,basicblok);
+	
+	j = 0;
+	while (j < 512) do
+		if ([SCRATCHPAD + j] != 0 ) then
+			[DISK_LIST + [SCRATCHPAD + j]] = 0;
+		endif;
+		j = j + 1;
+	endwhile;
+	
+	[DISK_LIST + basicblok] = 0;
+	[FAT + i + 2] = -1;
+	[FAT + i] = -1;
+	store ((FAT/512),10);		
+	store ((DISK_LIST/512),11);
+	[physicalSP - 2] = 0;
+	ireturn;	
+	
 endif;
 
 ireturn;
