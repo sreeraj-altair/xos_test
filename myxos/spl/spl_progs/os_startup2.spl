@@ -26,6 +26,9 @@ SP = 3 * 512;
 [19 * 512] = 0;
 
 load (9, 3);		//Load Interrupt 1
+load (10, 4);		//Load Interrupt 2
+load (11, 5);		//Load Interrupt 3
+load (12, 6);		//Load Interrupt 4
 
 load (8, 2);		//Load Timer Interrupt
 
@@ -33,6 +36,21 @@ load (8, 2);		//Load Timer Interrupt
 load (5,10);		//FAT
 
 load (6,11);		//Disk Free List
+
+alias counter R8;			
+counter = 0;
+while (counter <  128) do			// 64 entries, each of size 2 words
+	[ FILE_TABLE + counter + 0] = -1;	// Set FAT Index to -1
+	[ FILE_TABLE + counter + 1] =  0;	// Set File Open Count to 0
+	counter = counter + 2;			// Move to next entry
+endwhile;
+
+counter = 15;
+while (counter < 31) do
+	[READY_LIST + counter] = -1;
+	counter = counter + 1;
+endwhile;
+
 
 ireturn;
 

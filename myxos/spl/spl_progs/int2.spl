@@ -1,0 +1,80 @@
+alias physicalSP R8;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+alias sysCallNo R9;
+sysCallNo = [physicalSP - 1];
+print(sysCallNo);
+alias filename R10;
+filename = [physicalSP - 3];
+
+alias counter R12;
+
+if (sysCallNo == 2) then		//Open System Call
+	print("ENTER INT2");
+	alias fatindex R11;
+	fatindex = 0;
+	while (fatindex < 512) do		//Search FAT for file
+		if ([FAT + fatindex] == filename) then
+			break;
+		endif;
+		fatindex = fatindex + 8;
+	endwhile;
+	print(fatindex);
+	if (fatindex >= 512) then	
+		[physicalSP - 2] = -1;
+		print("No such File");
+		ireturn;
+	endif;
+	
+	counter = 0;
+	while (counter < 128) do		//Search System file table for fat index
+		if ([FILE_TABLE + counter] == fatindex) then
+			break;
+		endif;
+		counter = counter + 2;
+	endwhile;
+	
+	if (counter >= 128) then		//No fat index in system file table
+		counter = 0;
+		while (counter < 128) do	//Free entry in system file table
+			if ([FILE_TABLE + counter] == -1) then
+				break;
+			endif;
+			counter = counter + 2;
+		endwhile;
+		if (counter >= 128) then	//no free entry in system file table
+			[physicalSP - 2] = -1;
+			ireturn;
+		endif;
+	endif;
+	print(counter);
+	
+	alias currentPID R13;
+	currentPID = (PTBR - 1024) / 8;
+	alias currentPCB R14;
+	currentPCB = READY_LIST + 32 * currentPID;
+	
+	alias j R15;
+	j = 15;
+	while (j < 31) do			//Set per process file table
+		if ([currentPCB + j] == -1) then
+			[currentPCB + j] = counter;
+			[currentPCB + j + 1] = 0;
+			break;
+		endif;
+		j = j + 2;
+	endwhile;	
+	print(j);
+	if(j >= 31) then			//per process file table full
+		[physicalSP - 2] = -1;
+		ireturn;
+	endif;
+	
+	alias k R13;
+	[FILE_TABLE + counter] = fatindex;
+	k = [FILE_TABLE + counter + 1];
+	[FILE_TABLE + counter + 1] = k + 1;
+	
+	[physicalSP - 2] = j;
+	ireturn;
+endif;
