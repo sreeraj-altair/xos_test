@@ -252,7 +252,6 @@ int FindFreeBlock(){
 		for(j = 0 ; j < BLOCK_SIZE; j++){
 			if( getValue(disk[i].word[j]) == 0 ){
 				storeValue( disk[i].word[j] , 1 );	
-				//printf("%d - %d\n",j,(i-DISK_FREE_LIST)*BLOCK_SIZE + j);	
 				return ((i-DISK_FREE_LIST)*BLOCK_SIZE + j);
 			}
 		}
@@ -490,7 +489,6 @@ int loadExecutableToDisk(char *name)
 	
 	for(i = 0; i < num_of_blocks_reqd + 1; i++)
 	{
-		//printf("%d : ",i);
 		if((freeBlock[i] = FindFreeBlock()) == -1){
 				printf("not sufficient space in disk to hold a new file.\n");
 				FreeUnusedBlock(freeBlock, SIZE_EXEFILE_BASIC);

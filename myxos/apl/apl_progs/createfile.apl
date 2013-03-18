@@ -1,10 +1,9 @@
 decl
-	integer n;
+	integer status;
 enddecl
-
 integer main()
 {
-	n = Create("sample12");
-	print(n);
+	status = Create("myfile.dat");
+	print(status);
 	return 0;
 }

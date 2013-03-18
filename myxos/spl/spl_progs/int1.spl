@@ -1,37 +1,46 @@
 alias physicalSP R8;
-physicalSP = ([PTBR + 6]*512) + SP % 512 ;
-//print(physicalSP);
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
 alias sysCallNo R9;
-sysCallNo = [ physicalSP - 1];
-//print(sysCallNo);
+sysCallNo = [physicalSP - 1];
 
 if ( sysCallNo == 1) then	//Create System Call
-	print("Entering INT 1");
 	alias basicblk R10;
-	basicblk = 16;
-	while ( basicblk <= 447 ) do
+	
+	basicblk = 0;
+	while ( basicblk <= 447 ) do		//Search for a free block (basic block)
 		if ([DISK_LIST + basicblk] == 0) then
-			[DISK_LIST + basicblk]=1;
 			break;
 		endif;
 		basicblk = basicblk + 1;
 	endwhile;
+	if (basicblk > 447 ) then		//No free blocks
+		[physicalSP - 2] = -1;		
+		ireturn;
+	endif;
 	
 	alias filename R11;
-	filename = [ physicalSP - 2 ];
-	//print(filename);
+	filename = [ physicalSP - 3 ];
 	
 	alias counter R12;
-	counter = 0;
-	while(counter < 512) do
-		if([FAT + counter + 2] == -1) then
-			//print(counter);
-			
+	counter = 0;				//Check if file already exists
+	while (counter < 512) do		
+		if ([FAT + counter + 0] == filename) then
+			print("File exists");
+			[physicalSP - 2] = 0;		
+			ireturn;
+		endif;
+		counter = counter + 8;
+	endwhile;
+	
+	counter=0;
+	while (counter < 512) do		//Search for free entry in FAT
+		if ([FAT + counter + 2] == -1) then
 			[FAT + counter + 0] = filename;
 			[FAT + counter + 1] = 0;
 			[FAT + counter + 2] = basicblk;
 			
-			load (1,basicblk);	
+			load (1,basicblk);	//Load basic block from disk to scratchpad
 			
 			alias j R13;
 			j=0;
@@ -40,25 +49,25 @@ if ( sysCallNo == 1) then	//Create System Call
 				j = j + 1;
 			endwhile;
 			
-			store (1,basicblk);
+			store (1,basicblk);	//Store back the basic block to the disk
 			
-			store ((FAT/512),10);
-			store ((DISK_LIST/512),11);
-			[physicalSP - 12] = 0;
-			print("Created file");
+			[DISK_LIST + basicblk] = 1;	//Store 1 in disk free list
+			
+			store ((FAT/512),10);		//Store back FAT
+			store ((DISK_LIST/512),11);	//Store back Disk Free List
+			
+			[physicalSP - 2] = 0;		//Store return value
 			ireturn;
 			break;
 		endif;
 		counter = counter + 8;
 	endwhile;
 
-	// Return with -1 if there is no free entry
-	if(counter == 512) then 		
-		[physicalSP - 12] = -1;		
+	if(counter == 512) then 		// Return with -1 if there is no free entry
+		[physicalSP - 2] = -1;	
+		print("FAT full");	
 		ireturn;	
 	endif;
-	
-	
 endif;
 
 ireturn;

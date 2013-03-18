@@ -32,24 +32,7 @@ load (8, 2);		//Load Timer Interrupt
 
 load (5,10);		//FAT
 
-alias counter R8;	// R8 - R15 is used by system programmers.
-counter = 0;
-while ( counter <=  128) do
-	[ FILE_TABLE + counter] = -1;
-	counter = counter + 1;
-endwhile;
-
-alias j R9;
-counter = READY_LIST;
-while ( counter <= (READY_LIST + 1024) ) do
-	j = 15;
-	while (j <= 30) do
-		[ counter + j ] = -1;
-		j = j + 1;
-	endwhile;
-	counter = counter + 32;
-endwhile;
-
+load (6,11);		//Disk Free List
 
 ireturn;
 
