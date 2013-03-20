@@ -1,0 +1,61 @@
+alias physicalSP R8;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+alias sysCallNo R9;
+sysCallNo = [physicalSP - 1];
+
+alias filedesc R10;
+filedesc = [physicalSP - 4];
+
+alias arg2 R11;
+arg2 = [physicalSP - 3];
+
+if (sysCallNo == 7) then		//Read System Call
+	if (filedesc < 0 || filedesc > 7) then
+		[physicalSP - 2] = -1;
+		ireturn;
+	endif;
+	
+	alias currentPID R12;
+	currentPID = (PTBR - 1024) / 8;
+	alias currentPCB R13;
+	currentPCB = READY_LIST + 32 * currentPID;
+	
+	alias globalentry R14;
+	alias lseek R15;
+	
+	if ([currentPCB + 15 + filedesc] == -1) then
+		[physicalSP - 2] = -1;
+		ireturn;
+	else
+		globalentry = [currentPCB + 15 + 2*filedesc];
+		lseek = [currentPCB + 16 + 2*filedesc];
+	endif;
+		
+	alias basicblock R9;
+	alias fatentry R12;
+	fatentry = [FILE_TABLE + 2*globalentry];
+	
+	basicblock = [fatentry + 2];
+	
+	load (1,basicblock);
+	if (lseek == [fatentry + 1]*512) then
+		[physicalSP - 2] = -1;
+		ireturn;
+	endif;
+	
+	alias datablock R12;
+	datablock = [SCRATCHPAD + lseek/512];
+	
+	load (1,datablock);
+	
+	alias data R12;
+	data = [SCRATCHPAD + lseek%512];
+	
+	!!!!
+	
+	
+	lseek / 512
+	
+	
+endif;
