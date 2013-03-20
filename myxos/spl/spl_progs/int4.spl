@@ -1,0 +1,103 @@
+alias physicalSP R8;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+alias sysCallNo R9;
+sysCallNo = [physicalSP - 1];
+
+alias filedesc R10;
+filedesc = [physicalSP - 4];
+
+alias wordtowrite R11;
+wordtowrite = [physicalSP - 3];
+
+if (sysCallNo == 5) then		// Write System Call
+	print("Enter write");
+	
+	if (filedesc < 0 || filedesc > 7) then
+		print("Invalid desc");
+		[physicalSP - 2] = -1;
+		ireturn;
+	endif;
+	alias currentPID R12;
+	currentPID = (PTBR - 1024) / 8;
+	alias currentPCB R13;
+	currentPCB = READY_LIST + 32 * currentPID;
+	
+	alias globalentry R14;
+	alias lseek R15;
+	
+	
+	if ([currentPCB + 15 + 2*filedesc] == -1) then
+		[physicalSP - 2] = -1;
+		ireturn;
+	else
+		globalentry = [currentPCB + 15 + 2*filedesc];
+		lseek = [currentPCB + 16 + 2*filedesc];
+	endif;
+	print (globalentry);
+	alias fatentry R9;
+	alias basicblock R12;
+	
+	fatentry = [FILE_TABLE + 2*globalentry];
+	basicblock = [FAT + fatentry + 2];
+	print(fatentry);
+	print("ha");
+	
+	load (1,basicblock);
+	
+	if (lseek/512 == 256) then
+		print ("max size");
+		[physicalSP - 2] = -1;
+		ireturn;
+	endif;
+	
+	alias counter R14;
+	if ([SCRATCHPAD + lseek/512] == 0) then
+		print("create blk");
+		counter = 1;
+		while (counter < 448) do
+			if ([DISK_LIST + counter] == 0) then
+				[DISK_LIST + counter] = 1;
+				break;
+			endif;
+			counter = counter + 1;
+		endwhile;
+		if (counter >= 448) then
+			[physicalSP - 2] = -1;
+			ireturn;
+		endif;
+		
+		[SCRATCHPAD + lseek/512] = counter;
+		
+		print(counter);
+		
+		store (1,basicblock);
+		[FAT + fatentry + 1] = [FAT + fatentry + 1] + 1;
+		
+		store (FAT/512,10);
+		store (DISK_LIST/512,11);
+	endif;
+	
+	alias data R14;
+	data = [SCRATCHPAD + lseek/512];
+	print("hel");
+	print(data);
+	
+	load (1,data );
+	
+	[SCRATCHPAD + lseek%512] = wordtowrite;
+	
+	print([lseek/512]);
+	
+	store (1, data);
+		
+	[currentPCB + 16 + 2*filedesc] = lseek + 1;
+	
+	[physicalSP - 2] = 0;
+	
+	ireturn;			
+		
+	
+	
+	
+endif;

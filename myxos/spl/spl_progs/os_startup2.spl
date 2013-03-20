@@ -51,6 +51,6 @@ while (counter < 31) do
 	counter = counter + 1;
 endwhile;
 
-
+print("Loaded OS");
 ireturn;
 
