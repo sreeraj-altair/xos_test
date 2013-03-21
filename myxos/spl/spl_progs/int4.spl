@@ -72,7 +72,7 @@ if (sysCallNo == 5) then		// Write System Call
 		print(counter);
 		
 		store (1,basicblock);
-		[FAT + fatentry + 1] = [FAT + fatentry + 1] + 1;
+		[FAT + fatentry + 1] = [FAT + fatentry + 1] + 512;
 		
 		store (FAT/512,10);
 		store (DISK_LIST/512,11);
