@@ -11,7 +11,7 @@ alias wordtowrite R11;
 wordtowrite = [physicalSP - 3];
 
 if (sysCallNo == 5) then		// Write System Call
-	print("Enter write");
+	print("=>Write");
 	
 	if (filedesc < 0 || filedesc > 7) then
 		print("Invalid desc");
@@ -34,26 +34,21 @@ if (sysCallNo == 5) then		// Write System Call
 		globalentry = [currentPCB + 15 + 2*filedesc];
 		lseek = [currentPCB + 16 + 2*filedesc];
 	endif;
-	print (globalentry);
 	alias fatentry R9;
 	alias basicblock R12;
 	
 	fatentry = [FILE_TABLE + 2*globalentry];
 	basicblock = [FAT + fatentry + 2];
-	print(fatentry);
-	print("ha");
 	
 	load (1,basicblock);
 	
 	if (lseek/512 == 256) then
-		print ("max size");
 		[physicalSP - 2] = -1;
 		ireturn;
 	endif;
 	
 	alias counter R14;
 	if ([SCRATCHPAD + lseek/512] == 0) then
-		print("create blk");
 		counter = 1;
 		while (counter < 448) do
 			if ([DISK_LIST + counter] == 0) then
@@ -69,8 +64,6 @@ if (sysCallNo == 5) then		// Write System Call
 		
 		[SCRATCHPAD + lseek/512] = counter;
 		
-		print(counter);
-		
 		store (1,basicblock);
 		[FAT + fatentry + 1] = [FAT + fatentry + 1] + 512;
 		
@@ -80,14 +73,11 @@ if (sysCallNo == 5) then		// Write System Call
 	
 	alias data R14;
 	data = [SCRATCHPAD + lseek/512];
-	print("hel");
-	print(data);
 	
 	load (1,data );
 	
 	[SCRATCHPAD + lseek%512] = wordtowrite;
 	
-	print([lseek/512]);
 	
 	store (1, data);
 		
@@ -96,8 +86,5 @@ if (sysCallNo == 5) then		// Write System Call
 	[physicalSP - 2] = 0;
 	
 	ireturn;			
-		
-	
-	
 	
 endif;

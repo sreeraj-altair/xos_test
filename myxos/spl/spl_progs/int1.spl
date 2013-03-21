@@ -75,7 +75,6 @@ if (sysCallNo == 4) then		//Delete system call
 	alias i R13;
 	alias basicblok R12;
 	i = 0;
-	//print(filename);
 	while (i < 512) do
 		if ([FAT + i] == filename) then
 			basicblok = [FAT + i + 2];
@@ -86,7 +85,6 @@ if (sysCallNo == 4) then		//Delete system call
 	
 	if (i >= 512) then
 		[physicalSP - 2] = -1;
-		//print(i);
 		ireturn;
 	endif;
 	

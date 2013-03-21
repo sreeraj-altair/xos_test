@@ -30,8 +30,8 @@ MOV T0, [T0]
 MOV R11, T0
 MOV T0, 6
 EQ T0, R9
-JZ T0, 05872
-MOV T0,  "Enter seek"
+JZ T0, 05868
+MOV T0,  "=>Seek"
 OUT T0
 MOV T0, 0
 GT T0,  R10
@@ -43,7 +43,7 @@ MOV T0, R8
 MOV T1, 2
 SUB T0, T1
 MOV [T0], -1
-MOV T0,  "invalid desc"
+MOV T0,  "Invalid desc"
 OUT T0
 IRET
 JMP 05730
@@ -86,8 +86,6 @@ MUL T1, R14
 ADD T0, T1
 MOV T0, [T0]
 MOV R15, T0
-MOV T0, R11
-OUT T0
 MOV T0, 0
 GT T0,  R11
 MOV T1, 2560
@@ -97,15 +95,15 @@ ADD T1, T2
 MOV T1, [T1]
 LT T1, R11
 ADD T0, T1
-JZ T0, 05848
+JZ T0, 05844
 MOV T0, R8
 MOV T1, 2
 SUB T0, T1
 MOV [T0], -1
-MOV T0,  "range error"
+MOV T0,  "Range error"
 OUT T0
 IRET
-JMP 05860
+JMP 05856
 MOV T0, 16
 ADD T0, R13
 MOV T1, 2
@@ -117,11 +115,11 @@ MOV T1, 2
 SUB T0, T1
 MOV [T0], 0
 IRET
-JMP 05872
+JMP 05868
 MOV T0, 7
 EQ T0, R9
 JZ T0, 06108
-MOV T0,  "Enter read"
+MOV T0,  "=>Read"
 OUT T0
 MOV T0, 0
 GT T0,  R10
@@ -133,6 +131,8 @@ MOV T0, R8
 MOV T1, 2
 SUB T0, T1
 MOV [T0], -1
+MOV T0,  "Invalid desc"
+OUT T0
 IRET
 JMP 05906
 MOV T0, PTBR

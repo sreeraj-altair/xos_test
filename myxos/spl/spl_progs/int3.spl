@@ -11,10 +11,10 @@ alias arg2 R11;
 arg2 = [physicalSP - 3];
 
 if (sysCallNo == 6) then		//Seek System Call
-	print("Enter seek");
+	print("=>Seek");
 	if (filedesc < 0 || filedesc > 7) then
 		[physicalSP - 2] = -1;
-		print("invalid desc");
+		print("Invalid desc");
 		ireturn;
 	endif;
 	alias currentPID R12;
@@ -34,10 +34,9 @@ if (sysCallNo == 6) then		//Seek System Call
 	alias fatentry R15;
 	fatentry = [FILE_TABLE + 2*globalentry];
 	
-	print(arg2);
 	if (arg2 < 0 || arg2 > [FAT + fatentry + 1]) then
 		[physicalSP - 2] = -1;
-		print("range error");
+		print("Range error");
 		ireturn;
 	else
 		[currentPCB + 16 + 2*filedesc] = arg2;
@@ -51,9 +50,10 @@ endif;
 
 
 if (sysCallNo == 7) then		//Read System Call 
-	print("Enter read");
+	print("=>Read");
 	if (filedesc < 0 || filedesc > 7) then
 		[physicalSP - 2] = -1;
+		print("Invalid desc");
 		ireturn;
 	endif;
 	
