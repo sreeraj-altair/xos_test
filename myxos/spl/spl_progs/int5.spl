@@ -1,0 +1,51 @@
+alias physicalSP R8;
+physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+alias sysCallNo R9;
+sysCallNo = [physicalSP - 1];
+
+if (sysCallNo == 8) then		//Fork System Call
+	alias childPCB R10;
+	
+	childPCB = 0;
+	while (childPCB < 1024) do
+		if ([READY_LIST + childPCB + 1] == 0) then
+			[READY_LIST + childPCB] = (childPCB/32);
+			break;
+		endif;
+		childPCB = childPCB + 32;
+	endwhile;
+	if (childPCB >= 1024) then
+		[physicalSP - 2] = -1;
+		print("No free pcb");
+		ireturn;
+	endif;	
+	
+	alias counter R11;
+	alias numpages R12;
+	
+	numpages = 0;
+	counter = 1;
+	while (counter < 8) do
+		if ([PTBR + counter] == 01 || [PTBR + counter] == 11) then
+			numpages = numpages + 1;
+		endif;
+		counter = counter + 2;
+	endwhile;
+	
+	alias page1 R13;
+	alias page2 R14;
+	alias page3 R15;
+	
+	counter = 0;
+	while (counter < 64) do
+		if ([MEM_LIST + counter] ==  
+	alias currentPID R11;
+	currentPID = (PTBR - 1024) / 8;
+	alias currentPCB R12;
+	currentPCB = READY_LIST + 32 * currentPID;	
+	
+	
+	
+	
+endif;

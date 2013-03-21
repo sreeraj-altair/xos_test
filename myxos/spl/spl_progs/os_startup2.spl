@@ -29,6 +29,10 @@ load (9, 3);		//Load Interrupt 1
 load (10, 4);		//Load Interrupt 2
 load (11, 5);		//Load Interrupt 3
 load (12, 6);		//Load Interrupt 4
+load (13, 7);		//Load Interrupt 5
+load (14, 8);		//Load Interrupt 6
+load (15, 9);		//Load Interrupt 7
+
 
 load (8, 2);		//Load Timer Interrupt
 
@@ -49,6 +53,16 @@ counter = 15;
 while (counter < 31) do
 	[READY_LIST + counter] = -1;
 	counter = counter + 1;
+endwhile;
+
+counter = 0;
+
+while (counter < 64) do
+	if (counter <= 19) then
+		[MEM_LIST + counter] = 1;
+	else
+		[MEM_LIST + counter] = 0;
+	endif;
 endwhile;
 
 print("Loaded OS");
