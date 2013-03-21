@@ -35,7 +35,7 @@ if (sysCallNo == 6) then		//Seek System Call
 	fatentry = [FILE_TABLE + 2*globalentry];
 	
 	print(arg2);
-	if (arg2 < 0 || arg2 > [FAT + fatentry + 1]*512) then
+	if (arg2 < 0 || arg2 > [FAT + fatentry + 1]) then
 		[physicalSP - 2] = -1;
 		print("range error");
 		ireturn;
@@ -50,13 +50,8 @@ if (sysCallNo == 6) then		//Seek System Call
 endif;
 
 
-
-
-
-
-
-
 if (sysCallNo == 7) then		//Read System Call 
+	print("Enter read");
 	if (filedesc < 0 || filedesc > 7) then
 		[physicalSP - 2] = -1;
 		ireturn;
@@ -70,7 +65,7 @@ if (sysCallNo == 7) then		//Read System Call
 	alias globalentry R14;
 	alias lseek R15;
 	
-	if ([currentPCB + 15 + filedesc] == -1) then
+	if ([currentPCB + 15 + 2*filedesc] == -1) then
 		[physicalSP - 2] = -1;
 		ireturn;
 	else
@@ -82,23 +77,29 @@ if (sysCallNo == 7) then		//Read System Call
 	alias fatentry R12;
 	fatentry = [FILE_TABLE + 2*globalentry];
 	
-	basicblock = [fatentry + 2];
+	basicblock = [FAT + fatentry + 2];
 	
 	load (1,basicblock);
-	if (lseek == [fatentry + 1]*512) then
+	if (lseek == [FAT + fatentry + 1]) then
 		[physicalSP - 2] = -1;
 		ireturn;
 	endif;
 	
-	alias datablock R12;
+	alias datablock R9;
 	datablock = [SCRATCHPAD + lseek/512];
 	
 	load (1,datablock);
 	
-	alias data R12;
+	alias data R9;
+	
 	data = [SCRATCHPAD + lseek%512];
 	
+	[physicalSP - 3] = data;
 	
+	[currentPCB + 16 + 2*filedesc] = lseek + 1;
 	
+	[physicalSP - 2] = 0;
+	
+	ireturn;
 	
 endif;
