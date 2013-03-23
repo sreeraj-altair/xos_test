@@ -1,13 +1,13 @@
-alias physicalSP R8;
+alias physicalSP S0;
 physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
-alias sysCallNo R9;
+alias sysCallNo S1;
 sysCallNo = [physicalSP - 1];
 
-alias filedesc R10;
+alias filedesc S2;
 filedesc = [physicalSP - 4];
 
-alias arg2 R11;
+alias arg2 S3;
 arg2 = [physicalSP - 3];
 
 if (sysCallNo == 6) then		//Seek System Call
@@ -17,12 +17,12 @@ if (sysCallNo == 6) then		//Seek System Call
 		print("Invalid desc");
 		ireturn;
 	endif;
-	alias currentPID R12;
+	alias currentPID S4;
 	currentPID = (PTBR - 1024) / 8;
-	alias currentPCB R13;
+	alias currentPCB S5;
 	currentPCB = READY_LIST + 32 * currentPID;
 	
-	alias globalentry R14;
+	alias globalentry S6;
 	
 	if ([currentPCB + 15 + 2*filedesc] == -1) then
 		[physicalSP - 2] = -1;
@@ -31,7 +31,7 @@ if (sysCallNo == 6) then		//Seek System Call
 		globalentry = [currentPCB + 15 + 2*filedesc];
 	endif;
 	
-	alias fatentry R15;
+	alias fatentry S7;
 	fatentry = [FILE_TABLE + 2*globalentry];
 	
 	if (arg2 < 0 || arg2 > [FAT + fatentry + 1]) then
@@ -57,13 +57,13 @@ if (sysCallNo == 7) then		//Read System Call
 		ireturn;
 	endif;
 	
-	alias currentPID R12;
+	alias currentPID S4;
 	currentPID = (PTBR - 1024) / 8;
-	alias currentPCB R13;
+	alias currentPCB S5;
 	currentPCB = READY_LIST + 32 * currentPID;
 	
-	alias globalentry R14;
-	alias lseek R15;
+	alias globalentry S6;
+	alias lseek S7;
 	
 	if ([currentPCB + 15 + 2*filedesc] == -1) then
 		[physicalSP - 2] = -1;
@@ -73,8 +73,8 @@ if (sysCallNo == 7) then		//Read System Call
 		lseek = [currentPCB + 16 + 2*filedesc];
 	endif;
 		
-	alias basicblock R9;
-	alias fatentry R12;
+	alias basicblock S1;
+	alias fatentry S4;
 	fatentry = [FILE_TABLE + 2*globalentry];
 	
 	basicblock = [FAT + fatentry + 2];
@@ -85,12 +85,12 @@ if (sysCallNo == 7) then		//Read System Call
 		ireturn;
 	endif;
 	
-	alias datablock R9;
+	alias datablock S1;
 	datablock = [SCRATCHPAD + lseek/512];
 	
 	load (1,datablock);
 	
-	alias data R9;
+	alias data S1;
 	
 	data = [SCRATCHPAD + lseek%512];
 	

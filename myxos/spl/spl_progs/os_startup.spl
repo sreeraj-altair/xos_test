@@ -36,7 +36,7 @@ load (20,19);
 load (21,20);
 load (22,21);
 
-alias PTBR_Process1 R8;
+alias PTBR_Process1 S0;
 PTBR_Process1 = 1024 + 1 * 8;
 
 [PTBR_Process1 + 0] = 20; // 1st Word of Page Table Entry 1 - Page Number

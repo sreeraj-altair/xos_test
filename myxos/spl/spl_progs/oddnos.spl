@@ -1,5 +1,5 @@
-alias counter R8;
-alias n R9;
+alias counter S0;
+alias n S1;
 print "Enter n:";
 read n;
 counter = 0;

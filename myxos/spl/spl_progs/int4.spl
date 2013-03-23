@@ -1,13 +1,13 @@
-alias physicalSP R8;
+alias physicalSP S0;
 physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
-alias sysCallNo R9;
+alias sysCallNo S1;
 sysCallNo = [physicalSP - 1];
 
-alias filedesc R10;
+alias filedesc S2;
 filedesc = [physicalSP - 4];
 
-alias wordtowrite R11;
+alias wordtowrite S3;
 wordtowrite = [physicalSP - 3];
 
 if (sysCallNo == 5) then		// Write System Call
@@ -18,13 +18,13 @@ if (sysCallNo == 5) then		// Write System Call
 		[physicalSP - 2] = -1;
 		ireturn;
 	endif;
-	alias currentPID R12;
+	alias currentPID S4;
 	currentPID = (PTBR - 1024) / 8;
-	alias currentPCB R13;
+	alias currentPCB S5;
 	currentPCB = READY_LIST + 32 * currentPID;
 	
-	alias globalentry R14;
-	alias lseek R15;
+	alias globalentry S6;
+	alias lseek S7;
 	
 	
 	if ([currentPCB + 15 + 2*filedesc] == -1) then
@@ -34,8 +34,8 @@ if (sysCallNo == 5) then		// Write System Call
 		globalentry = [currentPCB + 15 + 2*filedesc];
 		lseek = [currentPCB + 16 + 2*filedesc];
 	endif;
-	alias fatentry R9;
-	alias basicblock R12;
+	alias fatentry S1;
+	alias basicblock S4;
 	
 	fatentry = [FILE_TABLE + 2*globalentry];
 	basicblock = [FAT + fatentry + 2];
@@ -47,7 +47,7 @@ if (sysCallNo == 5) then		// Write System Call
 		ireturn;
 	endif;
 	
-	alias counter R14;
+	alias counter S6;
 	if ([SCRATCHPAD + lseek/512] == 0) then
 		counter = 1;
 		while (counter < 448) do
@@ -71,7 +71,7 @@ if (sysCallNo == 5) then		// Write System Call
 		store (DISK_LIST/512,11);
 	endif;
 	
-	alias data R14;
+	alias data S6;
 	data = [SCRATCHPAD + lseek/512];
 	
 	load (1,data );

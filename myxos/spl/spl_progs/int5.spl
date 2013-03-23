@@ -1,12 +1,12 @@
-alias physicalSP R8;
+alias physicalSP S0;
 physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
-alias sysCallNo R9;
+alias sysCallNo S1;
 sysCallNo = [physicalSP - 1];
 
 if (sysCallNo == 8) then		//Fork System Call
 	print("=>Fork");
-	alias childPCB R10;
+	alias childPCB S2;
 	
 	childPCB = 0;
 	while (childPCB < 1024) do
@@ -22,8 +22,8 @@ if (sysCallNo == 8) then		//Fork System Call
 		ireturn;
 	endif;	
 	
-	alias counter R11;
-	alias numpages R12;
+	alias counter S3;
+	alias numpages S4;
 	
 	numpages = 0;
 	counter = 1;
@@ -34,10 +34,10 @@ if (sysCallNo == 8) then		//Fork System Call
 		counter = counter + 2;
 	endwhile;
 	
-	alias childpagetable R14;
+	alias childpagetable S6;
 	childpagetable = 8 * (childPCB/32) + 1024;	//physical address of child page table
 	
-	alias i R15;
+	alias i S7;
 	
 	i = 0;
 	counter = 0;
@@ -64,7 +64,7 @@ if (sysCallNo == 8) then		//Fork System Call
 		ireturn;
 	endif;
 	
-	alias temp R12;
+	alias temp S4;
 	temp = READY_LIST + childPCB;
 	
 	[temp + 1] = 1;
@@ -81,15 +81,15 @@ if (sysCallNo == 8) then		//Fork System Call
 	[temp + 13] = R6;
 	[temp + 14] = R7;
 	
-	alias parentPCB R12;
+	alias parentPCB S4;
 	parentPCB = READY_LIST + 32 * ((PTBR - 1024) / 8);
 	
-	alias temp2 R14;
+	alias temp2 S6;
 	temp2 = READY_LIST + childPCB + counter;
 	
-	alias temp3 R13;
+	alias temp3 S5;
 	
-	alias temp4 R9;
+	alias temp4 S1;
 	temp4 = parentPCB + counter;
 	
 	counter = 15;

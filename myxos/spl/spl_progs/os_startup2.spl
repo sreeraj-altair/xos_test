@@ -41,7 +41,7 @@ load (5,10);		//FAT
 
 load (6,11);		//Disk Free List
 
-alias counter R8;			
+alias counter S0;			
 counter = 0;
 while (counter <  128) do			// 64 entries, each of size 2 words
 	[ FILE_TABLE + counter + 0] = -1;	// Set FAT Index to -1

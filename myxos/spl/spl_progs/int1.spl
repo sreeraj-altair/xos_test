@@ -1,14 +1,14 @@
-alias physicalSP R8;
+alias physicalSP S0;
 physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
-alias sysCallNo R9;
+alias sysCallNo S1;
 sysCallNo = [physicalSP - 1];
 
-alias filename R11;
+alias filename S3;
 filename = [physicalSP - 3];
 
 if (sysCallNo == 1) then	//Create System Call
-	alias basicblk R10;
+	alias basicblk S2;
 	
 	basicblk = 0;
 	while ( basicblk <= 447 ) do		//Search for a free block (basic block)
@@ -22,7 +22,7 @@ if (sysCallNo == 1) then	//Create System Call
 		ireturn;
 	endif;
 	
-	alias counter R12;
+	alias counter S4;
 	counter = 0;				//Check if file already exists
 	while (counter < 512) do		
 		if ([FAT + counter + 0] == filename) then
@@ -42,7 +42,7 @@ if (sysCallNo == 1) then	//Create System Call
 			
 			load (1,basicblk);	//Load basic block from disk to scratchpad
 			
-			alias j R13;
+			alias j S5;
 			j=0;
 			while (j < 512) do
 				[SCRATCHPAD + j] = 0;
@@ -72,8 +72,8 @@ endif;
 
 if (sysCallNo == 4) then		//Delete system call
 	
-	alias i R13;
-	alias basicblok R12;
+	alias i S5;
+	alias basicblok S4;
 	i = 0;
 	while (i < 512) do
 		if ([FAT + i] == filename) then
@@ -89,7 +89,7 @@ if (sysCallNo == 4) then		//Delete system call
 	endif;
 	
 	
-	alias j R14;
+	alias j S6;
 	j = 0;
 	while (j < 128) do
 		if ([FILE_TABLE + j] == i) then
