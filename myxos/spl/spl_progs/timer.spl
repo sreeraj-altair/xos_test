@@ -1,8 +1,8 @@
 define PCBList_start 1536;
 define PCBList_end 2559;
+
 alias currentPID S0;
 currentPID = (PTBR - 1024) / 8;
-
 alias currentPCB S1;
 currentPCB = READY_LIST + 32 * currentPID;
 
@@ -27,7 +27,6 @@ physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 alias newPCB S3;
 alias temp S4;
 
-
 newPCB = 0;
 temp = currentPCB;
 
@@ -36,8 +35,12 @@ while (1) do
 		break;
 	endif;
 	temp = temp + 32;
+	
 	if (temp > PCBList_end) then
 		temp = PCBList_start;
+	endif;
+	if ([temp + 1] == 2) then
+		ireturn;
 	endif;
 endwhile;
 
@@ -65,6 +68,6 @@ newphysicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
 [ currentPCB + 1 ] = 1;
 [ newPCB + 1 ] = 2;
-
 ireturn;
 	
+
