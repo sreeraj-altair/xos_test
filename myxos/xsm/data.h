@@ -40,8 +40,8 @@
 #define T3		27
 
 #define BP_REG		28
-#define IP_REG		29
-#define SP_REG		30
+#define SP_REG		29
+#define IP_REG		30
 #define PTBR_REG	31
 #define PTLR_REG	32
 #define EFR_REG		33
@@ -81,7 +81,6 @@ struct {
 char reg[NUM_REGS][WORD_SIZE];
 char instruction[WORD_SIZE * WORDS_PERINSTR];
 int mode;
-int db_mode;
 
 typedef struct {
 	char word[PAGE_SIZE][WORD_SIZE];

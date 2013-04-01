@@ -17,7 +17,6 @@ integer main()
 			endif;
 			j = j+1;
 		endwhile;
-		
 		if (flag==0) then
 			print(i);
 		endif;

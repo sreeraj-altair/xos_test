@@ -6,11 +6,12 @@
 */
 main(int argc,char **argv){
 	int intDisable=0,flag_intValue;
-	db_mode=0;
+	db_mode = DISABLE;
+	step_flag = DISABLE;
 	if(argc >= 2)
 	{
 		if(strcmp(argv[1],"--debug") == 0 || strcmp(argv[1],"-d") == 0)
-			db_mode = 1;
+			db_mode = ENABLE;
 		else
 		{
 			char *flag_name = strtok(argv[1], "=");	
@@ -38,7 +39,7 @@ main(int argc,char **argv){
 	if(argc == 3)
 	{
 		if(strcmp(argv[2],"--debug") == 0 || strcmp(argv[2],"-d") == 0)
-			db_mode = 1;
+			db_mode = ENABLE;
 		else
 		{
 			char *flag_name = strtok(argv[2], "=");	
@@ -125,18 +126,13 @@ void run(int db_mode, int intDisable) {
 		if(mode == USER_MODE && !intDisable) 
 			tick();
 		Executeoneinstr(instr);
-		if(db_mode) {
-			printf("Values in registers after executing instruction :%s\n", instruction);
-			printRegisters();
-			printf("Press X to exit or any other key to continue.....\n");
-			char ch;
-			scanf("%c",&ch);
-			if(ch=='X' || ch=='x')
-				exit(0);
-		}
+		if(step_flag == ENABLE)
+			debug_interface();
 		if(is_time_zero() && !intDisable && mode==USER_MODE) {
 			reset_timer();
 			runInt0Code();
+			if(step_flag == ENABLE)
+				printf("TIMER Interrupt\n");
 		}
 	}
 }
@@ -2202,15 +2198,12 @@ void Executeoneinstr(int instr)
 			break;
 		
 		case BRKP:
-			printf("Values in registers after executing instruction :%s\n", instruction);
-			printRegisters();
-			printf("Press X to exit or any other key to continue.....\n");
-			char ch;
-			scanf("%c",&ch);
-			if(ch=='X' || ch=='x')
-				exit(0);
-			else
-				storeInteger(reg[IP_REG],getInteger(reg[IP_REG])+WORDS_PERINSTR);
+			if(db_mode == ENABLE)
+			{
+				step_flag = ENABLE;
+				printf("\nXSM Debug Environment\nType \"help\" for  getting a list of commands\n");
+			}
+			storeInteger(reg[IP_REG],getInteger(reg[IP_REG])+WORDS_PERINSTR);
 			break;
 		default:
 			exception("Illegal instruction\n", EX_ILLINSTR, 0);

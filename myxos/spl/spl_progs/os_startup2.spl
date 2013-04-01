@@ -1,3 +1,4 @@
+breakpoint;
 load (7,1);		//Load Exception Handler
 load (15,9);		//load Interrupt 7
 
@@ -63,8 +64,9 @@ while (counter < 64) do
 	else
 		[MEM_LIST + counter] = 0;
 	endif;
+	counter = counter + 1;
 endwhile;
-
+breakpoint;
 print("Loaded OS");
 ireturn;
 

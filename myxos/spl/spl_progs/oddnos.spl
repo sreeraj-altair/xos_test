@@ -1,3 +1,4 @@
+breakpoint;
 alias counter S0;
 alias n S1;
 print "Enter n:";
