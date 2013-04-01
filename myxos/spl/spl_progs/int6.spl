@@ -1,0 +1,112 @@
+//breakpoint;
+alias physicalSP S0;
+physicalSP = ([PTBR + 6] * 512) + (SP % 512);
+
+alias sysCallNo S1;
+sysCallNo = [physicalSP - 1];
+print (sysCallNo);
+alias filename S2;
+filename = [physicalSP - 3];
+print(filename);
+//breakpoint;
+if (sysCallNo == 9) then		// Exec System Call
+	print ("=> Exec");
+	alias counter S3;
+	alias flag S4;
+	
+	flag = 0;
+	counter = 0;
+	while (counter < 512) do
+		if ([FAT + counter] == filename) then
+			flag = 1;
+			break;
+		endif;
+		counter = counter + 8;
+	endwhile;
+	if (flag == 0) then
+		print ("File Not Found");
+		[physicalSP - 2] = -1;
+		ireturn;
+	endif;
+	//breakpoint;
+	//print (counter);
+	//print ([FAT + counter + 2]);
+	load (1,[FAT + counter + 2]);
+	//breakpoint;
+	alias pages S5;
+	pages = ([FAT + counter + 1] / 512);
+	
+	alias validpages S6;
+	
+	validpages = 0;
+	counter = 1;
+	while (counter < 6) do
+		//breakpoint;
+		if (([PTBR + counter] % 10) == 1) then
+			validpages = validpages + 1;
+		endif;
+		counter = counter + 1;
+	endwhile;
+	
+	alias temp S7;
+	
+	while (validpages > pages) do
+		temp = PTBR + (2 * validpages) - 2;
+		[MEM_LIST + [temp]] = 0;
+		[temp] = -1;
+		[temp + 1] = "00";
+		validpages = validpages - 1;
+	endwhile;
+	
+	
+	
+	while (pages > validpages) do
+		counter = 0;
+		while (counter < 64) do
+			if ([MEM_LIST + counter] == 0) then
+				[MEM_LIST + counter] = 1;
+				break;
+			endif;
+			counter = counter + 1;
+		endwhile;
+		temp = PTBR + (2 * validpages);
+		[temp] = counter;
+		[temp + 1] = "01";
+		validpages = validpages + 1;
+	endwhile;
+	
+	counter = 0;
+	while ([SCRATCHPAD + counter] != -1 && counter <= 3) do
+		breakpoint;
+		load ([PTBR + (2 * counter)],[SCRATCHPAD + counter]);
+		counter = counter + 1;
+	endwhile;
+	
+	alias currentPCB S8;
+	currentPCB = READY_LIST + 4 * (PTBR - 1024);
+	
+	counter = currentPCB + 15;
+	while (counter < (currentPCB + 31)) do
+		if ([counter] != -1) then
+			temp = FILE_TABLE + [counter] + 1;
+			[temp] = [temp] - 1;
+			if ([temp] == 0) then
+				[temp - 1] = -1;
+			endif;
+		endif;
+		counter = counter + 2;
+	endwhile;
+	
+	SP = 3 * 512;
+	
+	alias newphysicalSP S9;
+	
+	newphysicalSP = ([PTBR + 6] * 512) + (SP % 512);
+	
+	[newphysicalSP] = 0;
+	breakpoint;
+	//print ("hi");
+	ireturn;
+	
+	
+endif;
