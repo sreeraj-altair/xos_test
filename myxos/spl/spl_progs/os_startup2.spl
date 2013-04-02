@@ -4,21 +4,21 @@ load (15,9);		//load Interrupt 7
 
 [READY_LIST + 0] = 0;		// Sets the entry for PID as 0
 
-load (16,13);		//Load pages for INIT
-load (17,14);
-load (18,15);
+//load (16,13);		//Load pages for INIT
+//load (17,14);
+//load (18,15);
 
 PTBR = 1024;
 PTLR = 4;
 
-[PTBR + 0] = 16; 		// 1st Word of Page Table Entry 1 - Page Number
-[PTBR + 1] = 11; 		// 2nd Word of Page Table Entry 1 - Auxiliary Information
-[PTBR + 2] = 17; 		// 1st Word of Page Table Entry 2 - Page Number
-[PTBR + 3] = 11;		// 2nd Word of Page Table Entry 2 - Auxiliary Information
-[PTBR + 4] = 18; 		// 1st Word of Page Table Entry 3 - Page Number
-[PTBR + 5] = 11;		// 2nd Word of Page Table Entry 3 - Auxiliary Information
-[PTBR + 6] = 19; 		// 1st Word of Page Table Entry 4 - Page Number of stack 
-[PTBR + 7] = 11; 		// 2nd Word of Page Table Entry 4 - Auxiliary Information
+[PTBR + 0] = 13; 		// 1st Word of Page Table Entry 1 - Page Number
+[PTBR + 1] = "00"; 		// 2nd Word of Page Table Entry 1 - Auxiliary Information
+[PTBR + 2] = 14; 		// 1st Word of Page Table Entry 2 - Page Number
+[PTBR + 3] = "00";		// 2nd Word of Page Table Entry 2 - Auxiliary Information
+[PTBR + 4] = 15; 		// 1st Word of Page Table Entry 3 - Page Number
+[PTBR + 5] = "00";		// 2nd Word of Page Table Entry 3 - Auxiliary Information
+[PTBR + 6] = 16; 		// 1st Word of Page Table Entry 4 - Page Number of stack 
+[PTBR + 7] = "01"; 		// 2nd Word of Page Table Entry 4 - Auxiliary Information
 
 [READY_LIST + 1] = 2;	 	// Sets the entry for STATE as 2 (Running)
 
@@ -57,9 +57,8 @@ while (counter < 31) do
 endwhile;
 
 counter = 0;
-
 while (counter < 64) do
-	if (counter <= 19) then
+	if (counter <= 16) then
 		[MEM_LIST + counter] = 1;
 	else
 		[MEM_LIST + counter] = 0;

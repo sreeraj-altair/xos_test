@@ -65,7 +65,8 @@
      READ = 283,
      PRINT = 284,
      STRING = 285,
-     UMIN = 286
+     INLINE = 286,
+     UMIN = 287
    };
 #endif
 /* Tokens.  */
@@ -97,7 +98,8 @@
 #define READ 283
 #define PRINT 284
 #define STRING 285
-#define UMIN 286
+#define INLINE 286
+#define UMIN 287
 
 
 
@@ -114,7 +116,7 @@ typedef union YYSTYPE
 
 
 /* Line 2068 of yacc.c  */
-#line 118 "y.tab.h"
+#line 120 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

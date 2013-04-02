@@ -34,7 +34,7 @@ struct tree
 					n-nonterminal
 					b-break		t-continue	m-addresing expr
 					h-halt		C-checkpoint	I-ireturn		
-					1-IN	2-OUT	3-SIN	4-SOUT
+					1-IN	2-OUT	3-INLINE
 						*/
 	char *name;
 	int value;
@@ -365,7 +365,7 @@ void getreg(struct tree *root, char reg[])
 void codegen(struct tree * root)
 {
 	int n;
-	char reg1[4], reg2[4];
+	char reg1[5], reg2[5];
 	if(root==NULL)
 		return;	
 	switch(root->nodetype)
@@ -958,6 +958,33 @@ void codegen(struct tree * root)
 						regcount--;
 					}
 				}
+				else if(root->ptr1->ptr1->nodetype=='R')				//[reg]=*
+				{
+					getreg(root->ptr1->ptr1, reg1);
+					if(root->ptr2->nodetype=='R')		//[reg]=reg
+					{
+						getreg(root->ptr2, reg2);
+						out_linecount++;
+						fprintf(fp, "MOV [%s], %s\n", reg1, reg2);	
+					}
+					else if(root->ptr2->nodetype=='c')	//[reg]=no
+					{
+						out_linecount++;
+						fprintf(fp, "MOV [%s], %d\n", reg1, root->ptr2->value);
+					}
+					else if(root->ptr2->nodetype=='s')	//[reg]=string
+					{
+						out_linecount++;
+						fprintf(fp, "MOV [%s], %s\n", reg1, root->ptr2->name);
+					}
+					else					//[reg]=expr
+					{
+						codegen(root->ptr2);
+						out_linecount++;
+						fprintf(fp, "MOV [%s], T%d\n", reg1, regcount-1);
+						regcount--;
+					}
+				}
 				else				//[expr]=*
 				{
 					codegen(root->ptr1->ptr1);
@@ -1233,6 +1260,10 @@ void codegen(struct tree * root)
 			out_linecount++;
 			fprintf(fp, "OUT T%d\n", regcount-1);
 			regcount--;
+			break;
+		case '3':	//INLINE
+			out_linecount++;
+			fprintf(fp, "%s\n",root->ptr1->name);
 			break;
 		default:
 			printf("Unknown Command %c\n", root->nodetype);		//Debugging
