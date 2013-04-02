@@ -94,6 +94,7 @@ if (sysCallNo == 9) then		// Exec System Call
 			if ([temp] == 0) then
 				[temp - 1] = -1;
 			endif;
+			[counter] = -1;
 		endif;
 		counter = counter + 2;
 	endwhile;
