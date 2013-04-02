@@ -4,12 +4,13 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 
 alias sysCallNo S1;
 sysCallNo = [physicalSP - 1];
-print (sysCallNo);
+
 alias filename S2;
 filename = [physicalSP - 3];
-print(filename);
+
 //breakpoint;
 if (sysCallNo == 9) then		// Exec System Call
+	breakpoint;
 	print ("=> Exec");
 	alias counter S3;
 	alias flag S4;
@@ -45,7 +46,7 @@ if (sysCallNo == 9) then		// Exec System Call
 		if (([PTBR + counter] % 10) == 1) then
 			validpages = validpages + 1;
 		endif;
-		counter = counter + 1;
+		counter = counter + 2;
 	endwhile;
 	
 	alias temp S7;
@@ -77,7 +78,7 @@ if (sysCallNo == 9) then		// Exec System Call
 	
 	counter = 0;
 	while ([SCRATCHPAD + counter] != -1 && counter <= 3) do
-		breakpoint;
+		//breakpoint;
 		load ([PTBR + (2 * counter)],[SCRATCHPAD + counter]);
 		counter = counter + 1;
 	endwhile;
@@ -98,11 +99,10 @@ if (sysCallNo == 9) then		// Exec System Call
 	endwhile;
 	
 	SP = 3 * 512;
-	
+	//breakpoint;
 	alias newphysicalSP S9;
 	
 	newphysicalSP = ([PTBR + 6] * 512) + (SP % 512);
-	
 	[newphysicalSP] = 0;
 	breakpoint;
 	//print ("hi");
