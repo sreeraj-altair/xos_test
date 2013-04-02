@@ -1,0 +1,112 @@
+define PCBList_start 1536;
+define PCBList_end 2559;
+
+alias physicalSP S0;
+physicalSP = ([PTBR + 6] * 512) + (SP % 512);
+
+alias sysCallNo S1;
+sysCallNo = [physicalSP - 1];
+
+alias counter S2;
+counter = 0;
+while (counter < 1024) do
+	if ([READY_LIST + counter + 1] == 1) then
+		break;
+	endif;
+	counter = counter + 32;
+endwhile;
+if (counter >= 1024) then
+	print ("Last process");
+	halt;
+endif;
+
+//alias proc_count S3;
+//proc_count = 0;
+//counter = 0;
+//while (counter < 1024) do
+//	if ([READY_LIST + counter + 1] != 0) then
+//		proc_count = proc_count + 1;
+//	endif;
+//	counter = counter + 32;
+//endwhile;
+//if (proc_count == 1) then
+//	halt;
+//endif;
+
+
+if (sysCallNo == 10) then		//Exit System Call
+	print ("=> Exit");
+	alias temp S4;
+	alias currentPCB S5;
+	currentPCB = READY_LIST + 4 * (PTBR - 1024);
+	
+	counter = currentPCB + 15;
+	while (counter < (currentPCB + 31)) do
+		if ([counter] != -1) then
+			temp = FILE_TABLE + [counter] + 1;
+			[temp] = [temp] - 1;
+			if ([temp] == 0) then
+				[temp - 1] = -1;
+			endif;
+			[counter] = -1;
+		endif;
+		counter = counter + 2;
+	endwhile;
+	
+	[currentPCB + 1] = 0;
+	
+	counter = 0;
+	while (counter < 8) do
+		temp = PTBR + counter;
+		//print ([temp]);
+		if ([temp] != -1) then
+			[MEM_LIST + [temp]] = 0;
+		endif;
+		[temp] = -1;
+		[temp + 1] = "00";
+		counter = counter + 2;
+	endwhile;
+	
+	alias newPCB S6;		
+	temp = currentPCB;
+	while (1) do
+		if ([temp + 1] == 1) then
+			break;
+		endif;
+		temp = temp + 32;
+		
+		if (temp > PCBList_end) then
+			temp = PCBList_start;
+		endif;
+	endwhile;
+	newPCB = temp;
+	
+	BP = [newPCB + 2];
+	SP = [newPCB + 3];
+	PTBR = [newPCB + 5];
+	PTLR = [newPCB + 6];
+	R0 = [newPCB + 7];
+	R1 = [newPCB + 8];
+	R2 = [newPCB + 9];
+	R3 = [newPCB + 10];
+	R4 = [newPCB + 11];
+	R5 = [newPCB + 12];
+	R6 = [newPCB + 13];
+	R7 = [newPCB + 14];
+		
+	alias newphysicalSP S7;
+	SP = SP + 1;	
+	newphysicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
+
+	[ newphysicalSP ] = [ newPCB + 4 ]; // Stores IP field value of PCB on the stack 
+
+	[ newPCB + 1 ] = 2;
+	breakpoint;
+	ireturn;
+		
+		
+endif;
+
+if (sysCallNo == 0) then  		//Halt System Call
+	halt;
+endif;
