@@ -4,8 +4,6 @@ define PCBList_end 2559;
 alias physicalSP S0;
 physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 
-alias sysCallNo S1;
-sysCallNo = [physicalSP - 1];
 
 alias counter S2;
 counter = 0;
@@ -20,21 +18,7 @@ if (counter >= 1024) then
 	halt;
 endif;
 
-//alias proc_count S3;
-//proc_count = 0;
-//counter = 0;
-//while (counter < 1024) do
-//	if ([READY_LIST + counter + 1] != 0) then
-//		proc_count = proc_count + 1;
-//	endif;
-//	counter = counter + 32;
-//endwhile;
-//if (proc_count == 1) then
-//	halt;
-//endif;
-
-
-if (sysCallNo == 10) then		//Exit System Call
+		//Exit System Call
 	print ("=> Exit");
 	alias temp S4;
 	alias currentPCB S5;
@@ -60,7 +44,11 @@ if (sysCallNo == 10) then		//Exit System Call
 		temp = PTBR + counter;
 		//print ([temp]);
 		if ([temp] != -1) then
-			[MEM_LIST + [temp]] = 0;
+			if ([temp] >=448) then
+				[DISK_LIST + [temp]] = [DISK_LIST + [temp]] - 1;
+			else
+				[MEM_LIST + [temp]] = [MEM_LIST + [temp]] - 1;
+			endif;
 		endif;
 		[temp] = -1;
 		[temp + 1] = "00";
@@ -104,9 +92,3 @@ if (sysCallNo == 10) then		//Exit System Call
 	breakpoint;
 	ireturn;
 		
-		
-endif;
-
-if (sysCallNo == 0) then  		//Halt System Call
-	halt;
-endif;

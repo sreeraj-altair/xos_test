@@ -5,6 +5,8 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 
 	alias childPCB S2;
 	alias childPID S11;
+	alias childpagetable S6;
+	
 
 	childPCB = READY_LIST;
 	while (childPCB < 2560) do
@@ -15,13 +17,16 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 		endif;
 		childPCB = childPCB + 32;
 	endwhile;
-	//if (childPCB >= 2560) then
-		//[physicalSP - 2] = -1;
-		//ireturn;
-	//endif;	
+	if (childPCB >= 2560) then
+		[physicalSP - 2] = -1;
+		ireturn;
+	endif;	
+	
+	childpagetable = 8 * childPID + 1024;	//physical address of child page table
 
 	alias counter S3;
 	alias childstack S4;
+	alias diskstack S10;
 	
 	counter = 0;
 	while (counter < 64) do
@@ -32,11 +37,16 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 		endif;
 		counter = counter + 1;
 	endwhile;
-	//if (counter >= 64) then
-		//print("Mem Full");
-		//[physicalSP - 2] = -1;
-		//ireturn;
-	//endif;
+	if (counter >= 64) then
+		diskstack = 448;
+		while (diskstack < 512) do
+			if ([DISK_LIST + diskstack] == 0) then
+				childstack = diskstack;
+				break;
+			endif;
+			diskstack = diskstack + 1;
+		endwhile;
+	endif;
 
 	alias parentstack S5;
 	parentstack = [PTBR + 6];
@@ -47,52 +57,37 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 		counter = counter + 1;
 	endwhile;
 
-	alias childpagetable S6;
-	childpagetable = 8 * childPID + 1024;	//physical address of child page table
-
+	
 	[childpagetable + 6] = childstack;
-	[childpagetable + 7] = "01";
-
-	alias i S7;
-	alias page S8;
-	alias temp S9;
-	alias temp4 S10;
-	alias temp1 S12;
+	if (childstack < 448) then
+		[childpagetable + 7] = "01";
+	else
+		[childpagetable + 7] = "00";
+	endif;
+	
+	alias page S7;
+	alias temp1 S8;
+	
 	counter = 0;
 	while (counter < 6) do
-		i = 448;
-		while (i < 512) do
-			if ([DISK_LIST + i] == 0) then
-				break;
-			endif;
-		endwhile;
-		temp = childpagetable + counter;
-		temp1 = temp + 1;
-		temp4 = PTBR + counter + 1;
-	
-		if (([temp4] % 10) == 1) then
-			[temp] = i;
-			[temp1] = "00";
-			[DISK_LIST + i] = 1;
+		page = [PTBR + counter];
+		temp1 = childpagetable + counter;
+		[temp1] = page;
+		[temp1 + 1] = [PTBR + counter + 1];
+		if (([PTBR + counter + 1] % 10) == 1) then
+			[MEM_LIST + page] = [MEM_LIST + page] + 1;
 		else
-			page = [temp4];
-			if (page < 448) then
-				[temp] = page;
-				[temp1] = [temp4];
-			endif;
 			if (page >= 448) then
-				load (1,page);
-				store (1, i);
-				[DISK_LIST + i] = 1;
-				[temp] = i;
-				[temp1] = [temp4];
+				temp1 = DISK_LIST + page;
+				[temp1] = [temp1] + 1;
 			endif;
 		endif;
 		counter = counter + 2;
 	endwhile;
-
+	
 	store (6,11);
-
+	
+	alias temp S9;
 	temp = childPCB;
 
 	[temp + 1] = 1;
@@ -111,7 +106,8 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 	[temp + 14] = R7;
 
 	alias parentPCB S13;
-	parentPCB = READY_LIST + 32 * ((PTBR - 1024) / 8);
+	//parentPCB = READY_LIST + 4 * (PTBR - 1024);
+	parentPCB = 4 * PTBR - 2560; 
 
 	alias temp2 S14;
 	alias temp3 S15;

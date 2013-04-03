@@ -108,10 +108,9 @@ int removeFatEntry(int locationOfFat){
 	int i;
 	int blockNumber = FAT + locationOfFat / BLOCK_SIZE;
 	int startWordNumber = locationOfFat % BLOCK_SIZE;
-	for( i = startWordNumber ; i < startWordNumber + FATENTRY_SIZE ; i++ ){
-		strcpy(disk[blockNumber].word[i],"\0");
-	}
+	storeValue(disk[blockNumber].word[startWordNumber + FATENTRY_FILENAME], -1);
 	storeValue(disk[blockNumber].word[startWordNumber + FATENTRY_BASICBLOCK], -1);
+	storeValue(disk[blockNumber].word[startWordNumber + FATENTRY_FILESIZE], 0);
 	return 0;
 }
 
@@ -394,7 +393,7 @@ int writeFileToDisk(FILE *f, int blockNum, int type){
 		char buffer1[16],c;
 		for(i = 0; i < BLOCK_SIZE; i=i++)
 		{
-			fgets(buffer1,16,f);			
+			fgets(buffer1,16,f);
 			strcpy(disk[TEMP_BLOCK].word[i],buffer1);
 			if(feof(f))
 			{
@@ -422,7 +421,7 @@ int loadExecutableToDisk(char *name)
 	int freeBlock[SIZE_EXEFILE_BASIC];
 	int i,j,k,l,file_size=0,num_of_lines=0,num_of_blocks_reqd=0;
 	for(i=0;i<SIZE_EXEFILE_BASIC;i++)
-		freeBlock[i]=0;
+		freeBlock[i]=-1;
 	char c='\0',*s;
 	char filename[50];
 	s = strrchr(name,'/');
@@ -522,11 +521,11 @@ int loadDataToDisk(char *name)
 {
 	FILE *fileToBeLoaded;
 	int freeBlock[MAX_DATAFILE_SIZE_BASIC];
-	int i,j,k,num_of_chars=0,num_of_blocks_reqd=0,file_size=0;
+	int i,j,k,num_of_chars=0,num_of_blocks_reqd=0,file_size=0,num_of_words=0;
 	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
-		freeBlock[i]=0;
+		freeBlock[i]=-1;
 	char c='\0',*s;
-	char filename[50];
+	char filename[50],buf[16];
 	s = strrchr(name,'/');
 	if(s!=NULL)
 		strcpy(filename,s+1);
@@ -552,8 +551,17 @@ int loadDataToDisk(char *name)
 	fseek(fileToBeLoaded, 0L, SEEK_END);
 	
 	num_of_chars = ftell(fileToBeLoaded);
-	num_of_blocks_reqd = ((num_of_chars/16) / BLOCK_SIZE) + 1;
-	printf("\n chars = %d, Blocks = %d",num_of_chars,num_of_blocks_reqd);
+	
+	fseek(fileToBeLoaded,0,SEEK_SET);
+	while(1)
+	{
+		fgets(buf,16,fileToBeLoaded);
+		num_of_words++;
+		if(feof(fileToBeLoaded))
+			break;
+	}
+	num_of_blocks_reqd = (num_of_words/512) + 1;
+	//printf("\n Chars = %d, Words = %d, Blocks(chars) = %d, Blocks(words) = %d",num_of_chars,num_of_words,num_of_blocks_reqd,(num_of_words/512));
 	if(num_of_blocks_reqd > MAX_DATAFILE_SIZE)
 	{
 		printf("The size of file exceeds %d blocks",MAX_DATAFILE_SIZE);
@@ -837,7 +845,7 @@ void displayDiskFreeList()
 	{
 		for(i = 0; i < BLOCK_SIZE; i++)
 		{
-			printf("%d - %s  \n",i,disk[DISK_FREE_LIST+j].word[i]);
+			printf("%d \t - \t %s  \n",i,disk[DISK_FREE_LIST+j].word[i]);
 			if(getValue(disk[DISK_FREE_LIST+j].word[i])==0)
 				no_of_free_blocks++;
 		}

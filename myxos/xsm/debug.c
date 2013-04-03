@@ -3,15 +3,29 @@
 #include "memory_constants.h"
 #include "interrupt.h"
 
+/*
+ * This function initializes all debug flags and buffers
+ */
+void initialize_debug()
+{
+	db_mode = DISABLE;
+	step_flag = DISABLE;
+	bzero(command,COMMAND_LENGTH);
+	bzero( prev_command, COMMAND_LENGTH);
+}
+
 /* 
 Function to invoke Command Line interface 
 */
 void debug_interface()	
 {
-	char command[100], c;
-	int i,j;
+	char c;
+	char next_instr[WORD_SIZE * WORDS_PERINSTR];
+	int i,j,val;
 	printf("Last Instruction Executed : %s\n", instruction);
 	printf("Mode : %s \t Current IP Value: %s\n", (mode == USER_MODE)?"USER":"KERNEL" ,reg[IP_REG]);
+	if(getInstruction(next_instr) == 0)		//gets the next instruction to be executed
+		printf("Next Instruction to be Executed : %s\n", next_instr);
 	while(1)
 	{
 		i=0;
@@ -24,19 +38,33 @@ void debug_interface()
 		}
 		command[i] = '\0';
 		if(command[0]!='\0')
-			if(runCommand(command) == 1)
-				return;
+		{
+			val = runCommand(command);
+			if(val != -1)		// The command is a valid command
+				strcpy(prev_command,command);	// backup this command
+			if(val == 1)
+				return;				
+		}
+		else if(prev_command[0]!='\0')		// enter is pressed without any command and there is a valid previous command in buffer
+		{			
+			val = runCommand(prev_command);		//execute the prevoius command
+			if(val == 1)
+				return;			
+		}
 	}
 }
 
-/* 
-Function to process commands 
-*/
+/*
+ * function processes each command the user enters
+ * returns 1 if step or continue
+ * returns 0 on success
+ * returns -1 on error
+ */
 int runCommand(char command[])
 {
 	char *name = strtok(command, " ");
 	char *arg1, *arg2, *arg3;
-	int arg1value, arg2value;	
+	int arg1value, arg2value;
 	if(strcmp(name,"help")==0 || strcmp(name,"h")==0)		//"help" to display all commands
 	{
 		printf("\n step / s\n\t Single step the exection\n\n");	
@@ -54,6 +82,7 @@ int runCommand(char command[])
 		printf(" memfreelist / mf \n \t Displays the Memory Free List\n\n");
 		printf(" diskfreelist / df \n \t Displays the Memory copy of Disk Free List\n\n");
 		printf(" fat \n \t Displays the Memory Copy of File Allocation Table\n\n");
+		printf(" word / w <register/address> \n \t Displays the Memory Copy of File Allocation Table\n\n");
 		printf(" exit / e \n\t Exit the interface and Halt the machine\n");
 		printf(" help / h\n");
 	}	
@@ -77,7 +106,10 @@ int runCommand(char command[])
 		{
 			arg1value = getRegArg(arg1);
 			if(arg1value == -1)
+			{
 				printf("Illegal argument for \"%s\". See \"help\" for more information",name);
+				return -1;
+			}
 			else
 				printRegisters(arg1value,arg1value);
 		}
@@ -86,7 +118,10 @@ int runCommand(char command[])
 			arg1value = getRegArg(arg1);
 			arg2value = getRegArg(arg2);
 			if(arg1value == -1 || arg2value == -1)
+			{
 				printf("Illegal argument for \"%s\". See \"help\" for more information",name);
+				return -1;
+			}
 			else
 			{
 				if(arg1value > arg2value) 	//swap them
@@ -104,14 +139,20 @@ int runCommand(char command[])
 		arg1 = strtok(NULL, " ");
 		arg2 = strtok(NULL, " ");
 		if(arg1 == NULL)
+		{
 			printf("Insufficient argument for \"%s\". See \"help\" for more information",name);
+			return -1;
+		}
 		else if(arg2 == NULL)
 		{
 			arg1value = atoi(arg1);
 			if(arg1value >0 && arg1value < NUM_PAGES)
 				printMemory(arg1value);
 			else
+			{
 				printf("Illegal argument for \"%s\". See \"help\" for more information",name);
+				return -1;
+			}
 		}
 		else
 		{
@@ -132,7 +173,10 @@ int runCommand(char command[])
 				}
 			}
 			else
+			{
 				printf("Illegal argument for \"%s\". See \"help\" for more information",name);
+				return -1;
+			}
 		}	
 	}						
 	else if (strcmp(name,"pcb")==0 || strcmp(name,"p")==0)	//displays PCB of a process
@@ -153,7 +197,7 @@ int runCommand(char command[])
 			if(arg1value == 32)
 			{
 				printf("No PCB found with state as running");
-				return 0;
+				return -1;
 			}
 		}
 		else
@@ -162,7 +206,7 @@ int runCommand(char command[])
 			if(arg1value<0 || arg1value >=32)
 			{
 				printf("Illegal argument for \"%s\". See \"help\" for more information",name);
-				return 0;
+				return -1;
 			}
 		}
 		printPCB(arg1value);
@@ -177,7 +221,7 @@ int runCommand(char command[])
 			if(arg1value < 1024 || arg1value > 1272)
 			{
 				printf("Illegal PTBR value");
-				return 0;
+				return -1;
 			}
 		}
 		else
@@ -186,7 +230,7 @@ int runCommand(char command[])
 			if(arg1value < 1024 || arg1value > 1272)
 			{
 				printf("Illegal argument for \"%s\". See \"help\" for more information",name);
-				return 0;
+				return -1;
 			}
 		}
 		printPageTable(arg1value);
@@ -199,10 +243,15 @@ int runCommand(char command[])
 		printDiskFreeList();
 	else if (strcmp(name,"fat")==0)	//displays File Allocation Table
 		printFAT();
+	else if (strcmp(name,"word")==0 || strcmp(name,"w")==0 )	//displays a word
+		printFAT();
 	else if (strcmp(name,"exit")==0 || strcmp(name,"e")==0)		//Exits the interface
 		exit(0);
 	else
+	{
 		printf("Unknown command \"%s\". See \"help\" for more information",name);
+		return -1;
+	}
 	return 0;
 }
 
@@ -386,6 +435,7 @@ void printPageTable(int ptbr)
 		if(counter % 4 == 0)
 			printf("\n");
 		printf("%d: %s \t\t", counter, (getInteger(page[page_no].word[word_no + counter])==0)?"FREE":"USED" );
+		counter++;
 	}
 	printf("\n\n");
  }
@@ -405,6 +455,7 @@ void printPageTable(int ptbr)
 		if(counter % 4 == 0)
 			printf("\n");
 		printf("%d: %s \t\t", counter, (getInteger(page[page_no].word[word_no + counter])==0)?"FREE":"USED" );
+		counter++;
 	}
 	printf("\n\n");
  }

@@ -7,7 +7,7 @@ sysCallNo = [physicalSP - 1];
 
 alias filename S2;
 filename = [physicalSP - 3];
-
+print (filename);
 //breakpoint;
 if (sysCallNo == 9) then		// Exec System Call
 	breakpoint;
@@ -35,12 +35,19 @@ if (sysCallNo == 9) then		// Exec System Call
 	load (1,[FAT + counter + 2]);
 	//breakpoint;
 	
-	alias i S10;
-	alias temp S11;
-	
+	alias page S5;
+	alias i S6;
+	i=0;
 	counter = 0;
-	i = 0;
 	while (counter < 6) do
+		page = [PTBR + counter];
+		if (([PTBR + counter + 1] % 10) == 1) then
+			[MEM_LIST + page] = [MEM_LIST + page] - 1;
+		else
+			if (page >= 448) then
+				[DISK_LIST + page] = [DISK_LIST + page] - 1;
+			endif;
+		endif;
 		[PTBR + counter] = [SCRATCHPAD + i];
 		[PTBR + counter + 1] = "00";
 		counter = counter + 2;
@@ -48,7 +55,8 @@ if (sysCallNo == 9) then		// Exec System Call
 	endwhile;
 	
 	[PTBR + 7] = "01";
-		
+	
+	alias temp S11;	
 	alias currentPCB S8;
 	currentPCB = READY_LIST + 4 * (PTBR - 1024);
 	

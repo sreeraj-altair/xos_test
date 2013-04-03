@@ -73,9 +73,9 @@
      SYSFORK = 291,
      SYSEXEC = 292,
      SYSEXIT = 293,
-     SYSHALT = 294,
-     BREAK = 295,
-     CONTINUE = 296,
+     BREAK = 294,
+     CONTINUE = 295,
+     BREAKPOINT = 296,
      UMIN = 297
    };
 #endif
@@ -116,9 +116,9 @@
 #define SYSFORK 291
 #define SYSEXEC 292
 #define SYSEXIT 293
-#define SYSHALT 294
-#define BREAK 295
-#define CONTINUE 296
+#define BREAK 294
+#define CONTINUE 295
+#define BREAKPOINT 296
 #define UMIN 297
 
 

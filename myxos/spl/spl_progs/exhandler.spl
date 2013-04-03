@@ -6,4 +6,85 @@ Cause = EFR % 10;		// Gets value of cause field (size 1 char)
 VPagenum = (EFR / 10) % 100;    // Gets value of BadVAddr 
 Ip_addr = (EFR/1000);		// Gets value of IP at the point of exception
 
-
+if (Cause != 0) then
+	//EXIT
+	inline "JMP 7680";
+	//halt;
+else
+	print ("Page Fault");
+	breakpoint;
+	alias counter S3;
+	alias freepage S4;
+	alias victim S5;
+	alias freeswap S6;
+	
+	freepage = 0;
+	while (freepage < 64) do
+		if ([MEM_LIST + freepage] == 0) then
+			[MEM_LIST + freepage] = 1;
+			break;
+		endif;
+		freepage = freepage + 1;
+	endwhile;
+	print (freepage);
+	victim = freepage;
+	breakpoint;
+	if (freepage >= 64) then
+		halt;
+		counter = PTBR + (2 * VPagenum);
+		while (1) do
+			if ((((counter - 1024) % 4) != 3) && (([counter + 1] % 10) == 1)) then
+				if (([counter + 1] / 10) == 1) then
+					[counter + 1] = "01";
+				else
+					freeswap = 448;
+					while (freeswap < 512) do
+						if ([DISK_LIST + freeswap] == 0) then
+							store ([counter], freeswap);
+							[DISK_LIST + freeswap] = [DISK_LIST + freeswap] + 1;
+							victim = [counter];
+							[counter] = freeswap;
+							[counter + 1] = "00";
+							break;
+						endif;
+						freeswap = freeswap + 1;
+					endwhile;
+					if (freeswap >= 512) then
+						inline "JMP 7680";
+					endif;
+					break;
+				endif;
+			endif;
+			if (counter == 1280) then
+				counter = 1024;
+			endif;
+			counter = counter + 2;
+		endwhile;	
+	endif;	
+	breakpoint;
+	alias phyfaultpage S7;
+	phyfaultpage = [PTBR + (2 * VPagenum)];
+	
+	if (phyfaultpage >= 13 && phyfaultpage <= 447) then
+		load (victim,phyfaultpage);
+	else
+		if (phyfaultpage >= 448) then
+			load (victim,phyfaultpage);
+			[DISK_LIST + phyfaultpage] = [DISK_LIST + phyfaultpage] - 1;
+		else
+			print ("Invalid Address");
+			inline "JMP 7680";
+		endif;
+	endif;
+	
+	[PTBR + (2 * VPagenum)] = victim;
+	[PTBR + (2 * VPagenum) + 1] = "11";
+	
+	SP = SP + 1;
+	alias physicalSP S8;
+	physicalSP = ([PTBR + 6] * 512) + (SP % 512);
+	
+	[physicalSP] = Ip_addr;
+	ireturn;
+		
+endif;
