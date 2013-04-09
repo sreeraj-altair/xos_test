@@ -1,7 +1,5 @@
 #include "debug.h"
 #include "data.h"
-#include "memory_constants.h"
-#include "interrupt.h"
 
 /*
  * This function initializes all debug flags and buffers
@@ -37,20 +35,15 @@ void debug_interface()
 			scanf("%c",&c);
 		}
 		command[i] = '\0';
+		if(command[0] == '\0')
+			strcpy(command,prev_command);		
 		if(command[0]!='\0')
 		{
+			strcpy(prev_command,command);	// backup this command
 			val = runCommand(command);
-			if(val != -1)		// The command is a valid command
-				strcpy(prev_command,command);	// backup this command
 			if(val == 1)
 				return;				
-		}
-		else if(prev_command[0]!='\0')		// enter is pressed without any command and there is a valid previous command in buffer
-		{			
-			val = runCommand(prev_command);		//execute the prevoius command
-			if(val == 1)
-				return;			
-		}
+		}		
 	}
 }
 
@@ -186,15 +179,15 @@ int runCommand(char command[])
 		{
 			int page_no, word_no;
 			arg1value = 0;
-			while(arg1value < 32)
+			while(arg1value < NUM_PCB)
 			{
-				page_no = (1536 + arg1value * 32 + 1) / PAGE_SIZE;
-				word_no = (1536 + arg1value * 32 + 1) % PAGE_SIZE;
-				if(getInteger(page[page_no].word[word_no]) == 2)
+				page_no = (READY_LIST + arg1value * PCB_ENTRY + 1) / PAGE_SIZE;
+				word_no = (READY_LIST + arg1value * PCB_ENTRY + 1) % PAGE_SIZE;
+				if(getInteger(page[page_no].word[word_no]) == STATE_RUNNING)
 					break;
 				arg1value++;
 			}
-			if(arg1value == 32)
+			if(arg1value == NUM_PCB)
 			{
 				printf("No PCB found with state as running");
 				return -1;
@@ -203,7 +196,7 @@ int runCommand(char command[])
 		else
 		{
 			arg1value = atoi(arg1);
-			if(arg1value<0 || arg1value >=32)
+			if(arg1value<0 || arg1value >=NUM_PCB)
 			{
 				printf("Illegal argument for \"%s\". See \"help\" for more information",name);
 				return -1;
@@ -218,20 +211,20 @@ int runCommand(char command[])
 		{
 			int page_no, word_no;
 			arg1value = getInteger(reg[PTBR_REG]);
-			if(arg1value < 1024 || arg1value > 1272)
+			if(arg1value < PAGE_TABLE || arg1value > (PAGE_TABLE + ((NUM_PCB-1)*NUM_PAGE_TABLE*PAGE_TABLE_ENTRY)) )
 			{
 				printf("Illegal PTBR value");
 				return -1;
 			}
 		}
 		else
-		{
-			arg1value = 1024 + atoi(arg1) * 8;
-			if(arg1value < 1024 || arg1value > 1272)
+		{			
+			if(atoi(arg1) < 0 || atoi(arg1) >= NUM_PCB )
 			{
 				printf("Illegal argument for \"%s\". See \"help\" for more information",name);
 				return -1;
 			}
+			arg1value = PAGE_TABLE + atoi(arg1) * (PAGE_TABLE_ENTRY * NUM_PAGE_TABLE);
 		}
 		printPageTable(arg1value);
 	}
@@ -350,7 +343,7 @@ void printMemory(int page_no)
 	printf("Page No : %d",page_no);
 	for(word_no = 0; word_no < PAGE_SIZE; word_no++)
 	{
-		if(word_no % 4 == 0)
+		if(word_no % 3 == 0)
 			printf("\n");
 		printf("%d: %s \t\t", word_no, page[page_no].word[word_no]);
 	}

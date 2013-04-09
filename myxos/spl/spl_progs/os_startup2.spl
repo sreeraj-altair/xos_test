@@ -1,46 +1,52 @@
 breakpoint;
 load (7,1);		//Load Exception Handler
-load (15,9);		//load Interrupt 7
+load (8,2);		//Load Exception Handler
+load (23,17);		//load Interrupt 7
+load (24,18);		//load Interrupt 7
 
 [READY_LIST + 0] = 0;		// Sets the entry for PID as 0
-
-//load (16,13);		//Load pages for INIT
-//load (17,14);
-//load (18,15);
 
 PTBR = 1024;
 PTLR = 4;
 
-[PTBR + 0] = 13; 		// 1st Word of Page Table Entry 1 - Page Number
+[PTBR + 0] = 21; 		// 1st Word of Page Table Entry 1 - Page Number
 [PTBR + 1] = "00"; 		// 2nd Word of Page Table Entry 1 - Auxiliary Information
-[PTBR + 2] = 14; 		// 1st Word of Page Table Entry 2 - Page Number
+[PTBR + 2] = 22; 		// 1st Word of Page Table Entry 2 - Page Number
 [PTBR + 3] = "00";		// 2nd Word of Page Table Entry 2 - Auxiliary Information
-[PTBR + 4] = 15; 		// 1st Word of Page Table Entry 3 - Page Number
+[PTBR + 4] = 23; 		// 1st Word of Page Table Entry 3 - Page Number
 [PTBR + 5] = "00";		// 2nd Word of Page Table Entry 3 - Auxiliary Information
-[PTBR + 6] = 16; 		// 1st Word of Page Table Entry 4 - Page Number of stack 
+[PTBR + 6] = 25; 		// 1st Word of Page Table Entry 4 - Page Number of stack 
 [PTBR + 7] = "01"; 		// 2nd Word of Page Table Entry 4 - Auxiliary Information
 
 [READY_LIST + 1] = 2;	 	// Sets the entry for STATE as 2 (Running)
 
 SP = 3 * 512;
 
-[19 * 512] = 0;
+[25 * 512] = 0;
 
-load (9, 3);		//Load Interrupt 1
-load (10, 4);		//Load Interrupt 2
-load (11, 5);		//Load Interrupt 3
-load (12, 6);		//Load Interrupt 4
-load (13, 7);		//Load Interrupt 5
-load (14, 8);		//Load Interrupt 6
-load (15, 9);		//Load Interrupt 7
+load (11, 5);		//Load Interrupt 1
+load (12, 6);		//Load Interrupt 1
+load (13, 7);		//Load Interrupt 2
+load (14, 8);		//Load Interrupt 2
+load (15, 9);		//Load Interrupt 3
+load (16, 10);		//Load Interrupt 3
+load (17, 11);		//Load Interrupt 4
+load (18, 12);		//Load Interrupt 4
+load (19, 13);		//Load Interrupt 5
+load (20, 14);		//Load Interrupt 5
+load (21, 15);		//Load Interrupt 6
+load (22, 16);		//Load Interrupt 6
+load (23, 17);		//Load Interrupt 7
+load (24, 18);		//Load Interrupt 7
 
 
-load (8, 2);		//Load Timer Interrupt
+load (9, 3);		//Load Timer Interrupt
+load (10, 4);		//Load Timer Interrupt
 
 
-load (5,10);		//FAT
+load (5,19);		//FAT
 
-load (6,11);		//Disk Free List
+load (6,20);		//Disk Free List
 
 alias counter S0;			
 counter = 0;
@@ -58,7 +64,7 @@ endwhile;
 
 counter = 0;
 while (counter < 64) do
-	if (counter <= 16) then
+	if (counter <= 25) then
 		[MEM_LIST + counter] = 1;
 	else
 		[MEM_LIST + counter] = 0;
@@ -66,6 +72,4 @@ while (counter < 64) do
 	counter = counter + 1;
 endwhile;
 breakpoint;
-print("Loaded OS");
 ireturn;
-

@@ -1,6 +1,7 @@
 define PCBList_start 1536;
 define PCBList_end 2559;
 
+//breakpoint;
 alias currentPID S0;
 currentPID = (PTBR - 1024) / 8;
 alias currentPCB S1;
@@ -40,6 +41,7 @@ while (1) do
 		temp = PCBList_start;
 	endif;
 	if ([temp + 1] == 2) then
+		//breakpoint;
 		ireturn;
 	endif;
 endwhile;
@@ -68,6 +70,7 @@ newphysicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
 [ currentPCB + 1 ] = 1;
 [ newPCB + 1 ] = 2;
+//breakpoint;
 ireturn;
 	
 

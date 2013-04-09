@@ -1,6 +1,6 @@
 define PCBList_start 1536;
 define PCBList_end 2559;
-
+breakpoint;
 alias physicalSP S0;
 physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 
@@ -14,12 +14,11 @@ while (counter < 1024) do
 	counter = counter + 32;
 endwhile;
 if (counter >= 1024) then
-	print ("Last process");
+	breakpoint;
 	halt;
 endif;
 
 		//Exit System Call
-	print ("=> Exit");
 	alias temp S4;
 	alias currentPCB S5;
 	currentPCB = READY_LIST + 4 * (PTBR - 1024);
@@ -42,7 +41,6 @@ endif;
 	counter = 0;
 	while (counter < 8) do
 		temp = PTBR + counter;
-		//print ([temp]);
 		if ([temp] != -1) then
 			if ([temp] >=448) then
 				[DISK_LIST + [temp]] = [DISK_LIST + [temp]] - 1;
@@ -91,4 +89,3 @@ endif;
 	[ newPCB + 1 ] = 2;
 	breakpoint;
 	ireturn;
-		

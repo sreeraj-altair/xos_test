@@ -1,3 +1,4 @@
+breakpoint;
 alias physicalSP S0;
 physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
@@ -11,10 +12,9 @@ alias arg2 S3;
 arg2 = [physicalSP - 3];
 
 if (sysCallNo == 6) then		//Seek System Call
-	print("=>Seek");
 	if (filedesc < 0 || filedesc > 7) then
 		[physicalSP - 2] = -1;
-		print("Invalid desc");
+		breakpoint;
 		ireturn;
 	endif;
 	alias currentPID S4;
@@ -26,6 +26,7 @@ if (sysCallNo == 6) then		//Seek System Call
 	
 	if ([currentPCB + 15 + 2*filedesc] == -1) then
 		[physicalSP - 2] = -1;
+		breakpoint;
 		ireturn;
 	else
 		globalentry = [currentPCB + 15 + 2*filedesc];
@@ -36,13 +37,14 @@ if (sysCallNo == 6) then		//Seek System Call
 	
 	if (arg2 < 0 || arg2 > [FAT + fatentry + 1]) then
 		[physicalSP - 2] = -1;
-		print("Range error");
+		breakpoint;
 		ireturn;
 	else
 		[currentPCB + 16 + 2*filedesc] = arg2;
 	endif;
 	
 	[physicalSP - 2] = 0;
+	breakpoint;
 	ireturn;
 	
 	
@@ -50,10 +52,9 @@ endif;
 
 
 if (sysCallNo == 7) then		//Read System Call 
-	print("=>Read");
 	if (filedesc < 0 || filedesc > 7) then
 		[physicalSP - 2] = -1;
-		print("Invalid desc");
+		breakpoint;
 		ireturn;
 	endif;
 	
@@ -67,6 +68,7 @@ if (sysCallNo == 7) then		//Read System Call
 	
 	if ([currentPCB + 15 + 2*filedesc] == -1) then
 		[physicalSP - 2] = -1;
+		breakpoint;
 		ireturn;
 	else
 		globalentry = [currentPCB + 15 + 2*filedesc];
@@ -82,6 +84,7 @@ if (sysCallNo == 7) then		//Read System Call
 	load (1,basicblock);
 	if (lseek == [FAT + fatentry + 1]) then
 		[physicalSP - 2] = -1;
+		breakpoint;
 		ireturn;
 	endif;
 	
@@ -100,6 +103,7 @@ if (sysCallNo == 7) then		//Read System Call
 	
 	[physicalSP - 2] = 0;
 	
+	breakpoint;
 	ireturn;
 	
 endif;

@@ -7,11 +7,7 @@ sysCallNo = [physicalSP - 1];
 
 alias filename S2;
 filename = [physicalSP - 3];
-print (filename);
-//breakpoint;
 if (sysCallNo == 9) then		// Exec System Call
-	breakpoint;
-	print ("=> Exec");
 	alias counter S3;
 	alias flag S4;
 	
@@ -25,15 +21,11 @@ if (sysCallNo == 9) then		// Exec System Call
 		counter = counter + 8;
 	endwhile;
 	if (flag == 0) then
-		print ("File Not Found");
 		[physicalSP - 2] = -1;
+		//breakpoint;
 		ireturn;
 	endif;
-	//breakpoint;
-	//print (counter);
-	//print ([FAT + counter + 2]);
 	load (1,[FAT + counter + 2]);
-	//breakpoint;
 	
 	alias page S5;
 	alias i S6;
@@ -74,14 +66,10 @@ if (sysCallNo == 9) then		// Exec System Call
 	endwhile;
 	
 	SP = 3 * 512;
-	//breakpoint;
 	alias newphysicalSP S9;
 	
 	newphysicalSP = ([PTBR + 6] * 512) + (SP % 512);
 	[newphysicalSP] = 0;
-	breakpoint;
-	//print ("hi");
-	ireturn;
-	
-	
+	//breakpoint;
+	ireturn;	
 endif;

@@ -1,3 +1,4 @@
+//breakpoint;
 alias Cause S0;
 alias VPagenum S1;
 alias Ip_addr S2;
@@ -8,11 +9,9 @@ Ip_addr = (EFR/1000);		// Gets value of IP at the point of exception
 
 if (Cause != 0) then
 	//EXIT
-	inline "JMP 7680";
+	inline "JMP 11776";
 	//halt;
 else
-	print ("Page Fault");
-	breakpoint;
 	alias counter S3;
 	alias freepage S4;
 	alias victim S5;
@@ -26,11 +25,10 @@ else
 		endif;
 		freepage = freepage + 1;
 	endwhile;
-	print (freepage);
 	victim = freepage;
-	breakpoint;
+	//breakpoint;
 	if (freepage >= 64) then
-		halt;
+		breakpoint;
 		counter = PTBR + (2 * VPagenum);
 		while (1) do
 			if ((((counter - 1024) % 4) != 3) && (([counter + 1] % 10) == 1)) then
@@ -50,7 +48,7 @@ else
 						freeswap = freeswap + 1;
 					endwhile;
 					if (freeswap >= 512) then
-						inline "JMP 7680";
+						inline "JMP 11776";
 					endif;
 					break;
 				endif;
@@ -59,13 +57,14 @@ else
 				counter = 1024;
 			endif;
 			counter = counter + 2;
-		endwhile;	
+		endwhile;
+		breakpoint;	
 	endif;	
-	breakpoint;
+	//breakpoint;
 	alias phyfaultpage S7;
 	phyfaultpage = [PTBR + (2 * VPagenum)];
 	
-	if (phyfaultpage >= 13 && phyfaultpage <= 447) then
+	if (phyfaultpage >= 21 && phyfaultpage <= 447) then
 		load (victim,phyfaultpage);
 	else
 		if (phyfaultpage >= 448) then
@@ -73,7 +72,7 @@ else
 			[DISK_LIST + phyfaultpage] = [DISK_LIST + phyfaultpage] - 1;
 		else
 			print ("Invalid Address");
-			inline "JMP 7680";
+			inline "JMP 11776";
 		endif;
 	endif;
 	
@@ -85,6 +84,6 @@ else
 	physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 	
 	[physicalSP] = Ip_addr;
-	ireturn;
-		
+	//breakpoint;
+	ireturn;		
 endif;

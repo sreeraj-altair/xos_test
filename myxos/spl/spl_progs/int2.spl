@@ -1,3 +1,4 @@
+breakpoint;
 alias physicalSP S0;
 physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
 
@@ -12,7 +13,6 @@ alias currentPCB S6;
 currentPCB = READY_LIST + 32 * currentPID;
 
 if (sysCallNo == 2) then		//Open System Call
-	print("=>Open");
 	alias filename S2;
 	filename = [physicalSP - 3];
 	
@@ -24,10 +24,9 @@ if (sysCallNo == 2) then		//Open System Call
 		endif;
 		fatindex = fatindex + 8;
 	endwhile;
-	//print(fatindex);
 	if (fatindex >= 512) then	
 		[physicalSP - 2] = -1;
-		print("No such File");
+		breakpoint;
 		ireturn;
 	endif;
 	
@@ -49,10 +48,10 @@ if (sysCallNo == 2) then		//Open System Call
 		endwhile;
 		if (counter >= 128) then	//no free entry in system file table
 			[physicalSP - 2] = -1;
+			breakpoint;
 			ireturn;
 		endif;
 	endif;
-	//print(counter);
 	
 	alias j S7;
 	j = 0;
@@ -66,6 +65,7 @@ if (sysCallNo == 2) then		//Open System Call
 	endwhile;	
 	if(j >= 8) then			//per process file table full
 		[physicalSP - 2] = -1;
+		breakpoint;
 		ireturn;
 	endif;
 	
@@ -75,16 +75,16 @@ if (sysCallNo == 2) then		//Open System Call
 	[FILE_TABLE + counter + 1] = k + 1;
 	
 	[physicalSP - 2] = j;
+	breakpoint;
 	ireturn;
 endif;
 
 if (sysCallNo == 3) then		//Close System Call
-	print("=>Close");
 	alias filedesc S2;
 	filedesc = [physicalSP - 3];
 	if ( (filedesc < 0) || (filedesc > 7) ) then
 		[physicalSP - 2] = -1;
-		print("Invalid desc");
+		breakpoint;
 		ireturn;
 	endif;
 	
@@ -93,7 +93,7 @@ if (sysCallNo == 3) then		//Close System Call
 	temp = currentPCB + 15 + 2*filedesc;
 	if ( [temp] == -1) then
 		[physicalSP - 2] = -1;
-		print("File Not Open");
+		breakpoint;
 		ireturn;
 	else
 		temp2 = FILE_TABLE + [temp] + 1;
@@ -105,6 +105,7 @@ if (sysCallNo == 3) then		//Close System Call
 	
 	[temp] = -1;
 	[physicalSP - 2] = 0;
+	breakpoint;
 	ireturn;
 	
 endif;

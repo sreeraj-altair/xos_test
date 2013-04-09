@@ -1416,7 +1416,8 @@ void Executeoneinstr(int instr)
 						exception("Illegal address access", EX_ILLMEM, 0);
 						return;
 					}					
-					if(getType(reg[result]) == TYPE_INT && ((oper==JZ && getInteger(reg[result]) == 0) ||(oper==JNZ && getInteger(reg[result]) != 0)))
+					if( (getType(reg[result]) == TYPE_INT && oper==JZ && getInteger(reg[result]) == 0) 
+					|| (getType(reg[result]) == TYPE_STR || (oper==JNZ && getInteger(reg[result]) != 0)) )
 					{						
 						storeInteger(reg[IP_REG], opnd2);
 						
@@ -1753,7 +1754,7 @@ void Executeoneinstr(int instr)
 				return;
 			storeInteger(reg[SP_REG], getInteger(reg[SP_REG]) + 1);
 			storeInteger(page[translatedAddr.page_no].word[translatedAddr.word_no],getInteger(reg[IP_REG]) + WORDS_PERINSTR);
-			storeInteger(reg[IP_REG], (opnd1 + INT_START_PAGE) * PAGE_SIZE);
+			storeInteger(reg[IP_REG], ( (opnd1*PAGE_PER_INT) + INT_START_PAGE) * PAGE_SIZE);
 			mode = KERNEL_MODE;
 			break;
 		
@@ -1786,15 +1787,20 @@ void Executeoneinstr(int instr)
 			mode = USER_MODE;			
 			translatedAddr = translate(getInteger(reg[SP_REG]));
 			if(translatedAddr.page_no == -1 && translatedAddr.word_no == -1)
+			{
+				mode = KERNEL_MODE;
 				return;
+			}
 			else if(getType(page[translatedAddr.page_no].word[translatedAddr.word_no]) == TYPE_STR)
 			{
+				mode = KERNEL_MODE;
 				exception("Illegal return address", EX_ILLMEM, 0);
 				return;
 			}
 			result = getInteger(page[translatedAddr.page_no].word[translatedAddr.word_no]);
 			if(result < 0 || getType(reg[PTLR_REG]) == TYPE_STR || result >= getInteger(reg[PTLR_REG]) * PAGE_SIZE)
 			{
+				mode = KERNEL_MODE;
 				exception("Illegal return address", EX_ILLMEM, 0);
 				return;
 			}

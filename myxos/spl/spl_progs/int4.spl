@@ -1,6 +1,6 @@
+breakpoint;
 alias physicalSP S0;
 physicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
-breakpoint;
 alias sysCallNo S1;
 sysCallNo = [physicalSP - 1];
 
@@ -11,11 +11,9 @@ alias wordtowrite S3;
 wordtowrite = [physicalSP - 3];
 
 if (sysCallNo == 5) then		// Write System Call
-	print("=>Write");
-	
 	if (filedesc < 0 || filedesc > 7) then
-		print("Invalid desc");
 		[physicalSP - 2] = -1;
+		breakpoint;
 		ireturn;
 	endif;
 	alias currentPID S4;
@@ -29,6 +27,7 @@ if (sysCallNo == 5) then		// Write System Call
 	
 	if ([currentPCB + 15 + 2*filedesc] == -1) then
 		[physicalSP - 2] = -1;
+		breakpoint;
 		ireturn;
 	else
 		globalentry = [currentPCB + 15 + 2*filedesc];
@@ -44,6 +43,7 @@ if (sysCallNo == 5) then		// Write System Call
 	
 	if (lseek/512 == 256) then
 		[physicalSP - 2] = -1;
+		breakpoint;
 		ireturn;
 	endif;
 	
@@ -59,6 +59,7 @@ if (sysCallNo == 5) then		// Write System Call
 		endwhile;
 		if (counter >= 448) then
 			[physicalSP - 2] = -1;
+			breakpoint;
 			ireturn;
 		endif;
 		
@@ -67,8 +68,8 @@ if (sysCallNo == 5) then		// Write System Call
 		store (1,basicblock);
 		[FAT + fatentry + 1] = [FAT + fatentry + 1] + 512;
 		
-		store (FAT/512,10);
-		store (DISK_LIST/512,11);
+		store (FAT/512,19);
+		store (DISK_LIST/512,20);
 	endif;
 	
 	alias data S6;
@@ -85,6 +86,7 @@ if (sysCallNo == 5) then		// Write System Call
 	
 	[physicalSP - 2] = 0;
 	
+	breakpoint;
 	ireturn;			
 	
 endif;

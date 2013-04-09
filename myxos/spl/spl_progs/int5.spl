@@ -1,3 +1,4 @@
+//breakpoint;
 alias physicalSP S0;
 physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 
@@ -19,6 +20,7 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 	endwhile;
 	if (childPCB >= 2560) then
 		[physicalSP - 2] = -1;
+		//breakpoint;
 		ireturn;
 	endif;	
 	
@@ -26,7 +28,7 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 
 	alias counter S3;
 	alias childstack S4;
-	alias diskstack S10;
+	alias diskstack S12;
 	
 	counter = 0;
 	while (counter < 64) do
@@ -38,14 +40,44 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 		counter = counter + 1;
 	endwhile;
 	if (counter >= 64) then
-		diskstack = 448;
-		while (diskstack < 512) do
-			if ([DISK_LIST + diskstack] == 0) then
-				childstack = diskstack;
-				break;
+		
+		breakpoint;
+		alias victim S9;
+		alias freeswap S10;
+				
+		counter = PTBR + 8;
+		while (1) do
+			if ((((counter - 1024) % 4) != 3) && (([counter + 1] % 10) == 1)) then
+				if (([counter + 1] / 10) == 1) then
+					[counter + 1] = "01";
+				else
+					freeswap = 448;
+					while (freeswap < 512) do
+						if ([DISK_LIST + freeswap] == 0) then
+							store ([counter], freeswap);
+							[DISK_LIST + freeswap] = [DISK_LIST + freeswap] + 1;
+							victim = [counter];
+							[counter] = freeswap;
+							[counter + 1] = "00";
+							break;
+						endif;
+						freeswap = freeswap + 1;
+					endwhile;
+					if (freeswap >= 512) then
+						[physicalSP - 2] = -1;
+						//breakpoint;
+						ireturn;
+					endif;
+					break;
+				endif;
+			endif;			
+			counter = counter + 2;
+			if (counter == 1280) then
+				counter = 1024;
 			endif;
-			diskstack = diskstack + 1;
-		endwhile;
+		endwhile;	
+		childstack = victim;		
+		breakpoint;
 	endif;
 
 	alias parentstack S5;
@@ -59,12 +91,8 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 
 	
 	[childpagetable + 6] = childstack;
-	if (childstack < 448) then
-		[childpagetable + 7] = "01";
-	else
-		[childpagetable + 7] = "00";
-	endif;
-	
+	[childpagetable + 7] = "01";
+		
 	alias page S7;
 	alias temp1 S8;
 	
@@ -85,7 +113,7 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 		counter = counter + 2;
 	endwhile;
 	
-	store (6,11);
+	store (6,20);
 	
 	alias temp S9;
 	temp = childPCB;
@@ -129,8 +157,5 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 	physicalSP = ([childpagetable + 6] * 512) + (SP % 512);
 
 	[physicalSP - 2] = -2;
-
-	breakpoint;
+	//breakpoint;
 	ireturn;
-	
-
