@@ -64,7 +64,6 @@ R7 = [ newPCB + 14];
 alias newphysicalSP S5;
 SP = SP + 1;	
 newphysicalSP = ([PTBR + 2 * (SP / 512)] * 512) + (SP % 512);
-
 [ newphysicalSP ] = [ newPCB + 4 ]; // Stores IP field value of PCB on the stack 
 
 

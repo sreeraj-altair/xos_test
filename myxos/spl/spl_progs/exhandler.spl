@@ -28,16 +28,16 @@ else
 	victim = freepage;
 	//breakpoint;
 	if (freepage >= 64) then
-		breakpoint;
 		counter = PTBR + (2 * VPagenum);
 		while (1) do
-			if ((((counter - 1024) % 4) != 3) && (([counter + 1] % 10) == 1)) then
+			if ((((counter - 1024) % 8) != 6) && (([counter + 1] % 10) == 1)) then
 				if (([counter + 1] / 10) == 1) then
 					[counter + 1] = "01";
 				else
 					freeswap = 448;
 					while (freeswap < 512) do
 						if ([DISK_LIST + freeswap] == 0) then
+							breakpoint;
 							store ([counter], freeswap);
 							[DISK_LIST + freeswap] = [DISK_LIST + freeswap] + 1;
 							victim = [counter];
@@ -52,13 +52,12 @@ else
 					endif;
 					break;
 				endif;
-			endif;
+			endif;			
+			counter = counter + 2;
 			if (counter == 1280) then
 				counter = 1024;
 			endif;
-			counter = counter + 2;
 		endwhile;
-		breakpoint;	
 	endif;	
 	//breakpoint;
 	alias phyfaultpage S7;
