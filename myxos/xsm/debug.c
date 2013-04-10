@@ -42,9 +42,8 @@ void debug_interface()
 			strcpy(prev_command,command);	// backup this command
 			val = runCommand(command);
 			if(val == 1)
-				return;				
-		}		
-	}
+				return;	
+		}
 }
 
 /*
