@@ -5,25 +5,38 @@
 /* 
 Function to invoke Command Line interface 
 */
-void cli()
+void cli(int argc, char **argv)
 {
 	char command[100], c;
 	int i,j;
-	
-	printf("Unix-XFS Interace Version 1.0. \nType \"help\" for  getting a list of commands.");
-	while(1)
+	if(argc>1)
 	{
-		i=0;
-		printf("\n# ");
-		scanf("%c",&c);
-		while(c!='\n')
-		{  	
-			command[i++] = c;
+		i=1;
+		while(i<argc)
+		{
+		
+			sprintf(command,"%s %s", command, argv[i]);
+			i++;
+		}		
+		runCommand(command);	
+	}
+	else
+	{
+		printf("Unix-XFS Interace Version 1.0. \nType \"help\" for  getting a list of commands.");
+		while(1)
+		{
+			i=0;
+			printf("\n# ");
 			scanf("%c",&c);
+			while(c!='\n')
+			{  	
+				command[i++] = c;
+				scanf("%c",&c);
+			}
+			command[i] = '\0';
+			if(command[0]!='\0')
+					runCommand(command);
 		}
-		command[i] = '\0';
-		if(command[0]!='\0')
-				runCommand(command);
 	}
 }
 
@@ -87,17 +100,48 @@ void runCommand(char command[])
 			fileName[50] = '\0';
 		else
 		{
-			printf("Missing <pathname> for load. See \"help\" for more information");
+			printf("Missing <pathname> for load. See \"help\" for more information\n");
 			return;
 		}				
-		if (strcmp(arg1,"--exec")==0)		
+		if (strcmp(arg1,"--exec")==0)	
+		{
+			char *c;
+			if (strlen(fileName) > 12)
+			{
+				printf("Filename is more than 12 characters long\n");
+				return;
+			}
+			
+			c = strrchr(fileName,'.');
+			if (c == NULL || strcmp(c,".xsm") != 0)
+			{
+				printf("Filename does not have \".xsm\" extension\n");
+				return;
+			}
+			
 			loadExecutableToDisk(fileName);	 //loads executable file to disk.
+		}	
+			
 		else if (strcmp(arg1,"--init")==0)	
 			loadINITCode(fileName);			 //loads init code to disk
 		else if (strcmp(arg1,"--data")==0) 
+		{
+			char *c;
+			if (strlen(fileName) > 12)
 			{
-				loadDataToDisk(fileName);		 //loads data file to disk.
+				printf("Filename is more than 12 characters long\n");
+				return;
 			}
+			
+			c = strrchr(fileName,'.');
+			if (c == NULL || strcmp(c,".dat") != 0)
+			{
+				printf("Filename does not have \".dat\" extension\n");
+				return;
+			}
+			
+			loadDataToDisk(fileName);		 //loads data file to disk.
+		}
 		else if (strcmp(arg1,"--os")==0)
 			loadOSCode(fileName);			//loads OS startup code to disk
 		else if (strcmp(arg1,"--int")==0)
@@ -109,7 +153,13 @@ void runCommand(char command[])
 			else
 			{
 				int intNo = atoi(intType);
-				loadIntCode(fileName, intNo);
+				if(intNo >=1 && intNo <=NO_OF_INTERRUPTS)
+					loadIntCode(fileName, intNo);
+				else
+				{
+					printf("Invalid argument for \"--int=\" \n");
+					return;
+				}
 			}
 		}
 		else if (strcmp(arg1,"--exhandler")==0) 
@@ -117,7 +167,7 @@ void runCommand(char command[])
 				loadExHandlerToDisk(fileName);		 //loads exception handler routine to disk.
 			}
 		else
-			printf("Invalid argument \"%s\" for load. See \"help\" for more information",arg1);
+			printf("Invalid argument \"%s\" for load. See \"help\" for more information\n",arg1);
 	}	
 	
 	else if (strcmp(name,"rm")==0) 	//removes files to XFS disk.
@@ -142,7 +192,7 @@ void runCommand(char command[])
 		{
 			if(fileName==NULL)
 			{
-				printf("Missing <xfs_filename> for rm. See \"help\" for more information");
+				printf("Missing <xfs_filename> for rm. See \"help\" for more information\n");
 				return;
 			}
 			deleteExecutableFromDisk(fileName);	 	//removes executable file fron disk.
@@ -155,7 +205,7 @@ void runCommand(char command[])
 		{
 			if(fileName==NULL)
 			{
-				printf("Missing <xfs_filename> for rm. See \"help\" for more information");
+				printf("Missing <xfs_filename> for rm. See \"help\" for more information\n");
 				return;
 			}
 			deleteDataFromDisk(fileName);			 //removes data file from disk..		
@@ -167,13 +217,19 @@ void runCommand(char command[])
 		else if (strcmp(arg1,"--int")==0)
 		{
 			if(strcmp(intType,"timer")==0)
-				{
-					deleteTimerFromDisk();				//removes Timer interrupt routine from disk.
-				}
+			{
+				deleteTimerFromDisk();				//removes Timer interrupt routine from disk.
+			}
 			else
 			{
 				int intNo = atoi(intType);
-				deleteIntCode(intNo);				//removes Int Code from disk.
+				if(intNo >=1 && intNo <= NO_OF_INTERRUPTS)
+					deleteIntCode(intNo);				//removes Int Code from disk.
+				else
+				{
+					printf("Invalid argument for \"--int=\" \n");
+					return;
+				}
 			}
 		}
 		else if (strcmp(arg1,"--exhandler")==0)
@@ -181,7 +237,7 @@ void runCommand(char command[])
 				deleteExHandlerFromDisk();			 //removes exception handler routine from disk.			
 			}
 		else
-			printf("Invalid argument \"%s\" for rm. See \"help\" for more information",arg1);
+			printf("Invalid argument \"%s\" for rm. See \"help\" for more information\n",arg1);
 	}	
 	
 	else if (strcmp(name,"ls")==0)		//Lists all files.
@@ -202,7 +258,7 @@ void runCommand(char command[])
 		}
 		else
 		{
-			printf("Missing <xfs_filename> for cat. See \"help\" for more information");
+			printf("Missing <xfs_filename> for cat. See \"help\" for more information\n");
 			return;
 		}	
 	}
@@ -213,7 +269,7 @@ void runCommand(char command[])
 		arg3 = strtok(NULL, " ");
 		if(arg1==NULL || arg2==NULL|| arg3==NULL)
 		{
-			printf("Insufficient arguments for \"copy\". See \"help\" for more information");
+			printf("Insufficient arguments for \"copy\". See \"help\" for more information\n");
 			return;
 		}	
 		else
@@ -228,12 +284,12 @@ void runCommand(char command[])
 	else if (strcmp(name,"exit")==0)		//Exits the interface
 		exit(0);
 	else
-		printf("Unknown command \"%s\". See \"help\" for more information",name);
+		printf("Unknown command \"%s\". See \"help\" for more information\n",name);
 }
 
 
 
-int main(){
+int main(int argc, char **argv){
 	int  intNo, fd;
 	char fileName[51], option;
 	FILE* diskFp;
@@ -245,6 +301,6 @@ int main(){
 	}
 	close(fd);
 		
-	cli();					//Loads the Command Line Interface
+	cli(argc, argv);					//Loads the Command Line Interface
 	return 0;
 }

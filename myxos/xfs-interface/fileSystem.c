@@ -14,18 +14,25 @@ void listAllFiles(){
 	int fd;
 	fd = open(DISK_NAME, O_RDONLY, 0666);
 	if(fd < 0){
-	  printf("Unable to Open Disk File\n");
+	  printf("Unable to Open Disk File!\n");
 	  return;
 	}
 	close(fd);
 	int i,j;
+	int hasFiles = 0; 	// Flag which indicates if disk has no files
 	for(j = FAT ; j < FAT + NO_OF_FAT_BLOCKS ; j++)
 	{
 		for(i = 0 ; i < BLOCK_SIZE ; i = i + FATENTRY_SIZE)
 		{
-			if( getValue(disk[j].word[i+FATENTRY_BASICBLOCK]) != -1 )
+			if( getValue(disk[j].word[i+FATENTRY_BASICBLOCK]) > 0 )	// Negative value indicates invalid FAT
+			{ 	hasFiles = 1;
 				printf("Filename: %s   Filesize: %d\n",disk[j].word[i+FATENTRY_FILENAME],getValue(disk[j].word[i+FATENTRY_FILESIZE]));
+			}		
 		}
+	}
+	if(!hasFiles)
+	{
+		printf("The disk contains no files!\n");
 	}
 }
 
@@ -55,30 +62,28 @@ int CheckRepeatedName(char *name){
   This function returns the basic block entry(pass by pointer) corresponding to the address specified by the second arguement.
   Third argument specifies the type of file (assembly code or data file)
   NOTE: locationOfFat - relative word address of the name field in the fat.
-	This function works only for EXE files.
 */
-int getDataBlocks(int *basicBlockAddr, int locationOfFat, int type)
+int getDataBlocks(int *basicBlockAddr, int locationOfFat)
 {
 	
-	int i;
+	int i,a;
 	basicBlockAddr[0] = getValue(disk[FAT + locationOfFat / BLOCK_SIZE].word[locationOfFat % BLOCK_SIZE + FATENTRY_BASICBLOCK]);
-	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);               
-	if(type==0)				//ASSEMBLY CODE
+	emptyBlock(TEMP_BLOCK);
+	//printf("Basic Block = %d\n",basicBlockAddr[0]);
+	readFromDisk(TEMP_BLOCK,basicBlockAddr[0]);
+	
+	i = 0;
+	a = getValue(disk[TEMP_BLOCK].word[i]);
+	while ((a > 0) && i < MAX_DATAFILE_SIZE)
 	{
-		for( i = 0 ; i < SIZE_EXEFILE ; i++)
-			basicBlockAddr[i+1] = getValue(disk[TEMP_BLOCK].word[i]);
+		//printf("%d %d\t",i+1,a);
+		basicBlockAddr[i+1] = a;
+		i++;
+		a = getValue(disk[TEMP_BLOCK].word[i]);
 	}
-	else if(type==1)
-	{
-		for( i = 0 ; i < MAX_DATAFILE_SIZE ; i++)
-			basicBlockAddr[i+1] = getValue(disk[TEMP_BLOCK].word[i]);
-	}
+	
 	return 0;
 }
-
-
-
-
 
 
 
@@ -92,6 +97,8 @@ void FreeUnusedBlock(int *freeBlock, int size){
 	for( i = 0 ; i < size && freeBlock[i] != -1 && freeBlock[i] != 0; i++){
 		//printf("Block Num = %d\nLocation = %d", freeBlock[i],freeBlock[i] % BLOCK_SIZE );
 		storeValue( disk[DISK_FREE_LIST + freeBlock[i] / BLOCK_SIZE].word[freeBlock[i] % BLOCK_SIZE] , 0 );
+		emptyBlock(TEMP_BLOCK);
+		writeToDisk(TEMP_BLOCK,freeBlock[i]);
 	}
 }
 
@@ -115,7 +122,6 @@ int removeFatEntry(int locationOfFat){
 }
 
 
-
 /*
   This function deletes an executable file from the disk.
   NOTE: 1. Memory copy is committed to disk.
@@ -126,16 +132,20 @@ int removeFatEntry(int locationOfFat){
 int deleteExecutableFromDisk(char *name)
 {
 	int locationOfFat,i,blockAddresses[SIZE_EXEFILE_BASIC];   //0-basic block , 1,2,3-code+data blocks
-	if(strcmp(name, INIT_NAME) == 0){
-	  printf("Init cannot be removed\n");
-	  return 0;
-	}
+	for(i=0;i<SIZE_EXEFILE_BASIC;i++)
+		blockAddresses[i]=0;
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE){
-		printf("File not found\n");
+		printf("File \'%s\' not found!\n",name);
 		return -1;
 	}
-	getDataBlocks(blockAddresses,locationOfFat,ASSEMBLY_CODE);		
+	if(strstr(name,".xsm") == NULL)
+	{
+		printf("\'%s\' is not a valid executable file!\n",name);
+		return -1;
+	}
+	
+	getDataBlocks(blockAddresses,locationOfFat);		
 	FreeUnusedBlock(blockAddresses, SIZE_EXEFILE_BASIC);
 	removeFatEntry(locationOfFat);
 	for(i = FAT ; i < FAT + NO_OF_FAT_BLOCKS ; i++){
@@ -143,7 +153,8 @@ int deleteExecutableFromDisk(char *name)
 	}
 	for( i=DISK_FREE_LIST ; i<DISK_FREE_LIST + NO_OF_FREE_LIST_BLOCKS; i++)
 		writeToDisk(i,i);
-		return 0;	
+	
+	return 0;	
 }
 
 /*
@@ -151,19 +162,22 @@ int deleteExecutableFromDisk(char *name)
 */
 int deleteDataFromDisk(char *name)
 {
-	int locationOfFat,i,blockAddresses[MAX_DATAFILE_SIZE_BASIC];   
-	if(strcmp(name, INIT_NAME) == 0)
-	{
-		printf("Init cannot be removed\n");
-		return 0;
-	}
+	int locationOfFat,i,blockAddresses[MAX_DATAFILE_SIZE_BASIC+1];
+	for(i=0;i<MAX_DATAFILE_SIZE_BASIC;i++)
+		blockAddresses[i]=0;   
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE)
 	{
-		printf("File not found\n");
+		printf("File \'%s\' not found!\n",name);
 		return -1;
 	}
-	getDataBlocks(blockAddresses,locationOfFat,DATA_FILE);		
+	if(strstr(name,".dat") == NULL)
+	{
+		printf("\'%s\' is not a valid data file!\n",name);
+		return -1;
+	}
+	
+	getDataBlocks(blockAddresses,locationOfFat);		
 	FreeUnusedBlock(blockAddresses, MAX_DATAFILE_SIZE_BASIC);
 	removeFatEntry(locationOfFat);
 	for(i = FAT ; i < FAT + NO_OF_FAT_BLOCKS ; i++){
@@ -478,7 +492,7 @@ int loadExecutableToDisk(char *name)
 	for(i = 0; i < num_of_blocks_reqd + 1; i++)
 	{
 		if((freeBlock[i] = FindFreeBlock()) == -1){
-				printf("not sufficient space in disk to hold a new file.\n");
+				printf("Insufficient disk space!\n");
 				FreeUnusedBlock(freeBlock, SIZE_EXEFILE_BASIC);
 				return -1;
 			}
@@ -552,12 +566,12 @@ int loadDataToDisk(char *name)
 	fileToBeLoaded = fopen(name, "r");
 	if(fileToBeLoaded == NULL)
 	{
-		printf("File %s not found.\n", name);
+		printf("File \'%s\' not found.!\n", name);
 		return -1;
 	}
 	if(fileToBeLoaded == NULL)
 	{
-		printf("The file could not be opened");
+		printf("The file could not be opened!");
 		return -1;
 	}
 	
@@ -647,7 +661,7 @@ int loadINITCode(char* fileName )
 	fp = fopen(fileName, "r");
 	if(fp == NULL)
 	{
-		printf("File %s not found.\n", fileName);
+		printf("File \'%s\' not found.\n", fileName);
 		return -1;
 	}
 	
@@ -683,7 +697,7 @@ int loadOSCode(char* fileName){
 	int i,j;
 	if(fp == NULL)
 	{
-		printf("File %s not found.\n", fileName);
+		printf("File \'%s\' not found.\n", fileName);
 		return -1;
 	}
 	
@@ -715,7 +729,7 @@ int loadIntCode(char* fileName, int intNo)
 	int i,j;
 	if(fp == NULL)
 	{
-		printf("File %s not found.\n", fileName);
+		printf("File \'%s\' not found.\n", fileName);
 		return -1;
 	}
 	
@@ -809,35 +823,39 @@ void displayFileContents(char *name)
 	int fd;
 	fd = open(DISK_NAME, O_RDONLY, 0666);
 	if(fd < 0){
-	  printf("Unable to Open Disk File\n");
+	  printf("Unable to Open Disk File!\n");
 	  return;
 	}
 	
 	close(fd);
 	int i,j,k,l,flag=0,locationOfFat;
-	int blk[SIZE_EXEFILE_BASIC];
+	int blk[512];
+	
+	for(i=0;i<511;i++)
+		blk[i] = 0;
 	
 	locationOfFat = CheckRepeatedName(name);
 	if(locationOfFat >= FAT_SIZE){
-		printf("File not found\n");
+		printf("File \'%s\' not found!\n",name);
 		return;
 	}
 	
 	
-	getDataBlocks(blk,locationOfFat,ASSEMBLY_CODE);
+	getDataBlocks(blk,locationOfFat);
 
-	for(k = 1; k <= SIZE_EXEFILE; k++)
+	k = 1;
+	while (blk[k] > 0)
 	{
-		if(blk[k]!=0)
+		emptyBlock(TEMP_BLOCK);
+		readFromDisk(TEMP_BLOCK,blk[k]);
+		for(l=0;l<BLOCK_SIZE;l++)
 		{
-			emptyBlock(TEMP_BLOCK);
-			readFromDisk(TEMP_BLOCK,blk[k]);
-			for(l=0;l<BLOCK_SIZE;l++)
-			{
-				if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
-					printf("%d - %s   \n",l,disk[TEMP_BLOCK].word[l]);
-			}
+			if(strcmp(disk[TEMP_BLOCK].word[l],"\0")!=0)
+				printf("%s   \n",disk[TEMP_BLOCK].word[l]);
 		}
+		//printf("next block\n");
+		emptyBlock(TEMP_BLOCK);
+		k++;
 	}
 }
 
@@ -849,7 +867,7 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 	int fd;
 	fd = open(DISK_NAME, O_RDONLY, 0666);
 	if(fd < 0){
-	  printf("Unable to Open Disk File\n");
+	  printf("Unable to Open Disk File!\n");
 	  return;
 	}
 	close(fd);
@@ -859,7 +877,7 @@ void copyBlocksToFile (int startblock,int endblock,char *filename)
 	fp = fopen(filename,"w");
 	if(fp == NULL)
 	{
-		printf("File %s not found.\n", filename);
+		printf("File \'%s\' not found!\n", filename);
 	}
 	else
 	{
@@ -885,7 +903,7 @@ void displayDiskFreeList()
 	int fd;
 	fd = open(DISK_NAME, O_RDONLY, 0666);
 	if(fd < 0){
-	  printf("Unable to Open Disk File\n");
+	  printf("Unable to Open Disk File!\n");
 	  return;
 	}
 	close(fd);

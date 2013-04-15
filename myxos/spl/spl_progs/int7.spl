@@ -1,10 +1,10 @@
 define PCBList_start 1536;
 define PCBList_end 2559;
-breakpoint;
+//breakpoint;
 alias physicalSP S0;
 physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 
-
+//breakpoint;
 alias counter S2;
 counter = 0;
 while (counter < 1024) do
@@ -14,7 +14,7 @@ while (counter < 1024) do
 	counter = counter + 32;
 endwhile;
 if (counter >= 1024) then
-	breakpoint;
+	//breakpoint;
 	halt;
 endif;
 
@@ -45,7 +45,9 @@ endif;
 			if ([temp] >=448) then
 				[DISK_LIST + [temp]] = [DISK_LIST + [temp]] - 1;
 			else
-				[MEM_LIST + [temp]] = [MEM_LIST + [temp]] - 1;
+				if([temp + 1] % 10 == 1) then
+					[MEM_LIST + [temp]] = [MEM_LIST + [temp]] - 1;
+				endif;
 			endif;
 		endif;
 		[temp] = -1;
@@ -87,5 +89,5 @@ endif;
 	[ newphysicalSP ] = [ newPCB + 4 ]; // Stores IP field value of PCB on the stack 
 
 	[ newPCB + 1 ] = 2;
-	breakpoint;
+	//breakpoint;
 	ireturn;

@@ -47,14 +47,14 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 				
 		counter = PTBR + 8;
 		while (1) do
-			if ((((counter - 1024) % 8) != 6) && (([counter + 1] % 10) == 1)) then
+			if ((((counter - 1024) % 8) != 6) && (([counter + 1] % 10) == 1) && ([MEM_LIST + [counter]] <= 1) ) then
 				if (([counter + 1] / 10) == 1) then
 					[counter + 1] = "01";
 				else
 					freeswap = 448;
 					while (freeswap < 512) do
 						if ([DISK_LIST + freeswap] == 0) then
-							breakpoint;
+							//breakpoint;
 							store ([counter], freeswap);
 							[DISK_LIST + freeswap] = [DISK_LIST + freeswap] + 1;
 							victim = [counter];
@@ -83,14 +83,13 @@ physicalSP = ([PTBR + 6] * 512) + (SP % 512);
 
 	alias parentstack S5;
 	parentstack = [PTBR + 6];
-
 	counter = 0;
 	while (counter < 512) do
 		[(childstack * 512) + counter] = [(parentstack * 512) + counter];
 		counter = counter + 1;
 	endwhile;
 
-	
+	//breakpoint;
 	[childpagetable + 6] = childstack;
 	[childpagetable + 7] = "01";
 		

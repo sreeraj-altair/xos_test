@@ -22,7 +22,7 @@ if (sysCallNo == 9) then		// Exec System Call
 	endwhile;
 	if (flag == 0) then
 		[physicalSP - 2] = -1;
-		//breakpoint;
+		breakpoint;breakpoint;breakpoint;
 		ireturn;
 	endif;
 	load (1,[FAT + counter + 2]);

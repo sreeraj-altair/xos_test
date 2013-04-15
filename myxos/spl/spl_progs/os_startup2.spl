@@ -49,6 +49,8 @@ load (5,19);		//FAT
 load (6,20);		//Disk Free List
 
 alias counter S0;			
+
+//initialize system wide open file table
 counter = 0;
 while (counter <  128) do			// 64 entries, each of size 2 words
 	[ FILE_TABLE + counter + 0] = -1;	// Set FAT Index to -1
@@ -56,12 +58,29 @@ while (counter <  128) do			// 64 entries, each of size 2 words
 	counter = counter + 2;			// Move to next entry
 endwhile;
 
+//Initialize state of all pcbs except inits to 0
+counter = 1;
+while (counter < 32) do
+	[READY_LIST + counter*32 + 1] = 0;
+	counter = counter + 1;
+endwhile;
+
+//Initialize open file table of init
 counter = 15;
 while (counter < 31) do
 	[READY_LIST + counter] = -1;
 	counter = counter + 1;
 endwhile;
 
+//frees swap area
+counter = 448;
+while (counter < 512) do
+	[DISK_LIST + counter] = 0;
+	counter = counter + 1;
+endwhile;
+store(6,20);
+
+//initialize memory free list
 counter = 0;
 while (counter < 64) do
 	if (counter <= 25) then

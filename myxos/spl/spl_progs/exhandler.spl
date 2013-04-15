@@ -26,6 +26,10 @@ else
 		freepage = freepage + 1;
 	endwhile;
 	victim = freepage;
+	if(victim == 22) then
+		print "hai";
+		breakpoint;
+	endif;
 	//breakpoint;
 	if (freepage >= 64) then
 		counter = PTBR + (2 * VPagenum);
@@ -37,7 +41,7 @@ else
 					freeswap = 448;
 					while (freeswap < 512) do
 						if ([DISK_LIST + freeswap] == 0) then
-							breakpoint;
+							//breakpoint;
 							store ([counter], freeswap);
 							[DISK_LIST + freeswap] = [DISK_LIST + freeswap] + 1;
 							victim = [counter];

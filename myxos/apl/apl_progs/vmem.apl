@@ -6,6 +6,9 @@ integer main()
 		retval=Exec("vmem.xsm");
 	else
 		while(childpid != -1) do
+			//if(childpid == 3) then
+				//breakpoint;
+			//endif;
 			print(childpid);
 		endwhile;
 	endif;
